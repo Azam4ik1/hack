@@ -1,0 +1,19 @@
+symbol: EURUSD
+thresholds:
+  up: 0.65
+  down: 0.35
+entry_window_seconds: 15
+risk:
+  stake_pct: 0.01
+  max_daily_loss_pct: 0.05
+  pause_after_losses: 2
+  pause_minutes: 15
+  max_trades_per_day: 25
+features:
+  lookback: 200
+model:
+  lr_steps: 500
+  lr_rate: 0.1
+calibration:
+  bins: 10
+payout: 0.8
