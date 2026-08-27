@@ -1,0 +1,624 @@
+<title>Путь букета</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Piazzolla:ital,wght@0,400;0,600;1,400&display=swap">
+
+<style>
+:root{
+  --ink:#12180F;
+  --ink-soft:#454F41;
+  --ink-faint:#7C8677;
+  --paper:#F4F5EF;
+  --surface:#FBFCF8;
+  --line:#DCDFD3;
+  --accent:#1B3A6B;
+  --accent-ink:#FBFCF8;
+  --accent-wash:#E6EBF3;
+  --stem:#3E6B4A;
+  --alert:#B33C24;
+  --slot:#E9EBE1;
+  --shadow:0 1px 2px rgba(18,24,15,.06), 0 8px 24px rgba(18,24,15,.05);
+  --display:"Piazzolla", Georgia, "Times New Roman", serif;
+  --body:"Golos Text", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#EDF0E7;
+    --ink-soft:#AEB6A6;
+    --ink-faint:#7C8677;
+    --paper:#0D110C;
+    --surface:#161B14;
+    --line:#2A3227;
+    --accent:#8FB2E0;
+    --accent-ink:#0D110C;
+    --accent-wash:#1A2434;
+    --stem:#84AC8E;
+    --alert:#E0785F;
+    --slot:#1E2519;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 28px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#EDF0E7;
+  --ink-soft:#AEB6A6;
+  --ink-faint:#7C8677;
+  --paper:#0D110C;
+  --surface:#161B14;
+  --line:#2A3227;
+  --accent:#8FB2E0;
+  --accent-ink:#0D110C;
+  --accent-wash:#1A2434;
+  --stem:#84AC8E;
+  --alert:#E0785F;
+  --slot:#1E2519;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 28px rgba(0,0,0,.4);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:var(--display);font-weight:600;text-wrap:balance;margin:0;line-height:1.12;letter-spacing:-.01em}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+.wrap{width:min(1120px, calc(100% - 48px));margin-inline:auto}
+.eyebrow{
+  font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0;
+}
+.lede{font-size:19px;color:var(--ink-soft);max-width:62ch}
+
+/* ---------- header ---------- */
+.top{
+  position:sticky;top:0;z-index:60;
+  background:color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.top-in{display:flex;align-items:center;gap:24px;padding:14px 0;justify-content:space-between}
+.mark{font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:-.02em}
+.mark span{color:var(--stem)}
+.top-right{display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:flex-end}
+.tel{font-weight:600;font-variant-numeric:tabular-nums;text-decoration:none;white-space:nowrap}
+.cut{font-size:14px;color:var(--ink-soft);display:flex;align-items:center;gap:7px;white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--stem);flex:none}
+@media (max-width:620px){ .cut{display:none} }
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  background:var(--accent);color:var(--accent-ink);
+  font-family:var(--body);font-size:16px;font-weight:600;
+  padding:14px 26px;border:none;border-radius:2px;cursor:pointer;
+  text-decoration:none;transition:transform .12s ease, filter .12s ease;
+}
+.btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn.small{padding:10px 18px;font-size:15px}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--ink-faint);filter:none}
+
+/* ---------- hero ---------- */
+.hero{padding:76px 0 64px;border-bottom:1px solid var(--line)}
+.hero-grid{display:grid;grid-template-columns:1.35fr .85fr;gap:56px;align-items:end}
+.hero h1{font-size:clamp(38px, 5.6vw, 68px)}
+.hero h1 em{font-style:italic;color:var(--stem)}
+.hero .lede{margin-top:22px;font-size:20px}
+.hero-cta{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:30px}
+.hero-note{font-size:14px;color:var(--ink-faint)}
+.facts{display:grid;gap:0;border-top:1px solid var(--ink)}
+.fact{padding:16px 0;border-bottom:1px solid var(--line);display:flex;gap:16px;align-items:baseline}
+.fact b{font-family:var(--display);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;flex:none;min-width:88px}
+.fact span{font-size:14px;color:var(--ink-soft);line-height:1.45}
+@media (max-width:880px){ .hero-grid{grid-template-columns:1fr;gap:40px;align-items:start} }
+
+/* ---------- scroll walk ---------- */
+.walk{position:relative;background:var(--surface);border-bottom:1px solid var(--line)}
+.walk-sticky{position:sticky;top:0;height:100vh;min-height:600px;overflow:hidden;display:flex;flex-direction:column}
+.walk-head{padding:88px 0 0;flex:none}
+.walk-head .wrap{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap}
+.walk-viewport{flex:1;position:relative;overflow:hidden;display:flex;align-items:center}
+.strip{display:flex;gap:clamp(28px,4vw,64px);padding-inline:clamp(24px,6vw,140px);will-change:transform}
+.stop{width:clamp(260px, 34vw, 420px);flex:none;display:flex;flex-direction:column;gap:16px}
+.stop-slot{
+  aspect-ratio:1;background:var(--slot);border:1px dashed var(--line);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:18px;gap:6px;position:relative;
+}
+.stop-slot .tag{
+  position:absolute;top:14px;left:14px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  font-weight:600;color:var(--ink-faint);
+}
+.stop-slot .brief{font-size:13px;color:var(--ink-faint);line-height:1.4}
+.stop-n{font-family:var(--display);font-size:14px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.stop h3{font-size:clamp(20px,2.2vw,27px)}
+.stop p{font-size:15px;color:var(--ink-soft)}
+.stop.key .stop-slot{border:1px solid var(--accent);background:var(--accent-wash)}
+.stop.key .stop-n{color:var(--accent)}
+.stop.key h3{color:var(--accent)}
+.rail{flex:none;padding:0 0 26px}
+.rail .wrap{display:flex;gap:2px}
+.rail-seg{flex:1;height:3px;background:var(--line);position:relative;overflow:hidden}
+.rail-seg i{position:absolute;inset:0;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .18s linear}
+.rail-seg.on i{transform:scaleX(1)}
+.rail-seg.key i{background:var(--accent)}
+.rail-labels{display:flex;gap:2px;margin-top:10px}
+.rail-labels span{flex:1;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+@media (max-width:700px){ .rail-labels{display:none} }
+
+/* fallback: no sticky scrub */
+.walk.static .walk-sticky{position:static;height:auto;min-height:0}
+.walk.static .walk-viewport{overflow-x:auto;padding-block:32px}
+.walk.static .strip{transform:none !important}
+.walk.static .rail{display:none}
+
+/* ---------- generic sections ---------- */
+section{padding:88px 0}
+.sec-head{max-width:64ch;margin-bottom:44px;display:flex;flex-direction:column;gap:14px}
+.sec-head h2{font-size:clamp(28px,3.6vw,42px)}
+
+/* offers */
+.offers{display:grid;grid-template-columns:repeat(auto-fit,minmax(232px,1fr));gap:20px}
+.offer{background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.offer .slot{aspect-ratio:1;background:var(--slot);border-bottom:1px solid var(--line);display:flex;align-items:flex-end;padding:14px}
+.offer .slot small{font-size:12px;color:var(--ink-faint);line-height:1.35}
+.offer-body{padding:18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.offer h3{font-size:20px}
+.offer .occ{font-size:13px;color:var(--stem);font-weight:600;letter-spacing:.04em}
+.offer .comp{font-size:14px;color:var(--ink-soft);flex:1}
+.offer .price{font-family:var(--display);font-size:25px;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:9px;margin-top:6px}
+.offer .price small{font-family:var(--body);font-size:12.5px;color:var(--ink-faint);font-weight:500;letter-spacing:.02em}
+.price-note{margin-top:20px;font-size:14px;color:var(--ink-faint);max-width:70ch}
+
+/* proof */
+.proof{background:var(--surface);border-block:1px solid var(--line)}
+.proof-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.chat{background:var(--paper);border:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.chat-hd{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.bub{max-width:82%;padding:11px 14px;font-size:15px;line-height:1.45;border-radius:2px}
+.bub.them{background:var(--slot);align-self:flex-start}
+.bub.you{background:var(--accent);color:var(--accent-ink);align-self:flex-end}
+.bub .shot{display:block;aspect-ratio:4/3;background:var(--slot);border:1px dashed var(--line);margin-bottom:9px;font-size:12px;color:var(--ink-faint);padding:10px;line-height:1.35}
+.bub.you .shot{border-color:color-mix(in srgb, var(--accent-ink) 45%, transparent);color:color-mix(in srgb, var(--accent-ink) 80%, transparent);background:color-mix(in srgb, var(--accent-ink) 12%, transparent)}
+.chat-time{font-size:12px;color:var(--ink-faint);align-self:flex-end;font-variant-numeric:tabular-nums}
+@media (max-width:880px){ .proof-grid{grid-template-columns:1fr;gap:36px} }
+
+/* guarantee */
+.gua{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:0;border-top:1px solid var(--ink)}
+.gua div{padding:24px 22px 26px;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+.gua div:last-child{border-right:none}
+.gua b{display:block;font-family:var(--display);font-size:38px;font-weight:600;font-variant-numeric:tabular-nums;margin-bottom:8px}
+.gua p{font-size:14.5px;color:var(--ink-soft)}
+@media (max-width:760px){ .gua div{border-right:none} }
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:26px}
+.step{display:flex;flex-direction:column;gap:9px;padding-top:16px;border-top:2px solid var(--ink)}
+.step .t{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--stem);font-variant-numeric:tabular-nums}
+.step h3{font-size:19px}
+.step p{font-size:14.5px;color:var(--ink-soft)}
+
+/* scenarios */
+.scen{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.scen article{background:var(--paper);padding:26px 24px;display:flex;flex-direction:column;gap:10px}
+.scen h3{font-size:19px}
+.scen p{font-size:15px;color:var(--ink-soft)}
+.scen .q{font-family:var(--display);font-style:italic;font-size:15.5px;color:var(--ink-faint)}
+
+/* trust */
+.trust{background:var(--surface);border-block:1px solid var(--line)}
+.trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.slots-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pslot{aspect-ratio:1;background:var(--slot);border:1px dashed var(--line);padding:14px;display:flex;align-items:flex-end;font-size:12.5px;color:var(--ink-faint);line-height:1.35}
+.rev{display:flex;flex-direction:column;gap:14px}
+.rev article{border-left:2px solid var(--line);padding:2px 0 2px 16px;font-size:14.5px;color:var(--ink-faint);line-height:1.5}
+.legal{margin-top:26px;font-size:13.5px;color:var(--ink-faint);line-height:1.65}
+@media (max-width:880px){ .trust-grid{grid-template-columns:1fr;gap:36px} }
+
+/* form */
+.form-sec{background:var(--ink);color:var(--paper);padding:88px 0}
+.form-sec h2{color:var(--paper)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.form-sec .lede{color:color-mix(in srgb, var(--paper) 72%, transparent)}
+form{display:flex;flex-direction:column;gap:16px}
+label{display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:color-mix(in srgb, var(--paper) 62%, transparent)}
+input,select{
+  font-family:var(--body);font-size:16px;padding:13px 14px;
+  background:color-mix(in srgb, var(--paper) 8%, transparent);
+  border:1px solid color-mix(in srgb, var(--paper) 22%, transparent);
+  border-radius:2px;color:var(--paper);
+}
+input::placeholder{color:color-mix(in srgb, var(--paper) 38%, transparent)}
+select option{background:#12180F;color:#F4F5EF}
+.form-sec .btn{background:var(--paper);color:var(--ink);margin-top:6px}
+.form-fine{font-size:13px;color:color-mix(in srgb, var(--paper) 52%, transparent);line-height:1.6}
+.promise{display:flex;flex-direction:column;gap:18px;border-top:1px solid color-mix(in srgb, var(--paper) 22%, transparent);padding-top:24px}
+.promise div{display:flex;gap:14px;align-items:baseline}
+.promise b{font-family:var(--display);font-size:15px;flex:none;min-width:62px;color:color-mix(in srgb, var(--paper) 62%, transparent);font-variant-numeric:tabular-nums}
+.promise p{font-size:15px;color:color-mix(in srgb, var(--paper) 88%, transparent)}
+@media (max-width:880px){ .form-grid{grid-template-columns:1fr;gap:40px} }
+
+footer{padding:40px 0;font-size:13.5px;color:var(--ink-faint);line-height:1.7}
+.ph{border-bottom:1px dotted var(--ink-faint);cursor:help}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important}
+}
+</style>
+
+<header class="top">
+  <div class="wrap top-in">
+    <div class="mark">Мастерская<span>.</span></div>
+    <div class="top-right">
+      <span class="cut"><i class="dot"></i>Заказ до 18:00 — доставим сегодня</span>
+      <a class="tel" href="tel:+70000000000"><span class="ph">+7 000 000-00-00</span></a>
+      <a class="btn small" href="#zayavka">Оставить заявку</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Доставка цветов по Москве</p>
+      <h1 style="margin-top:18px">Привезём сегодня. И покажем букет <em>до того</em>, как курьер выедет.</h1>
+      <p class="lede">Вы получите фотографию собранного букета в мессенджер и подтвердите его. Не понравится — пересоберём до выезда, без доплаты и без спора.</p>
+      <div class="hero-cta">
+        <a class="btn" href="#zayavka">Оставить заявку</a>
+        <span class="hero-note">Ответим за 5 минут с 8:00 до 22:00</span>
+      </div>
+    </div>
+    <div class="facts">
+      <div class="fact"><b>18:00</b><span>Последний срок заказа с доставкой сегодня. Позже — привезём завтра к утру.</span></div>
+      <div class="fact"><b>2 часа</b><span>Окно доставки, которое мы называем заранее. Не «в течение дня».</span></div>
+      <div class="fact"><b>5 суток</b><span>Гарантия свежести. Простоял меньше — возвращаем стоимость.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="walk" id="walk" style="padding:0">
+  <div class="walk-sticky">
+    <div class="walk-head">
+      <div class="wrap">
+        <div>
+          <p class="eyebrow">Путь букета</p>
+          <h2 style="font-size:clamp(24px,3vw,34px);margin-top:10px">Пять шагов, которые обычно не показывают</h2>
+        </div>
+        <p style="font-size:14px;color:var(--ink-faint);max-width:34ch">Листайте — камера идёт по мастерской от привоза до курьера.</p>
+      </div>
+    </div>
+
+    <div class="walk-viewport">
+      <div class="strip" id="strip">
+
+        <article class="stop">
+          <div class="stop-slot">
+            <span class="tag">Фото 1</span>
+            <p class="brief">Холодильная камера, коробки с привозом, дата на упаковке в кадре.</p>
+          </div>
+          <span class="stop-n">01 — 06:40</span>
+          <h3>Привоз и холодильник</h3>
+          <p>Цветы приезжают утром и сразу уходят в камеру на +4°. Дата привоза стоит на каждой коробке — по ней и считается гарантия свежести.</p>
+        </article>
+
+        <article class="stop">
+          <div class="stop-slot">
+            <span class="tag">Фото 2</span>
+            <p class="brief">Руки флориста за рабочим столом, обрезка стеблей, инструмент.</p>
+          </div>
+          <span class="stop-n">02 — 10:15</span>
+          <h3>Стол флориста</h3>
+          <p>Каждый букет собирает человек, а не конвейер. Если цветка из состава сегодня нет, мы не подменяем молча — звоним и предлагаем замену равную или дороже.</p>
+        </article>
+
+        <article class="stop key">
+          <div class="stop-slot">
+            <span class="tag">Фото 3 — главное</span>
+            <p class="brief">Готовый букет на нейтральном фоне ровно так, как его снимают для клиента.</p>
+          </div>
+          <span class="stop-n">03 — 11:30</span>
+          <h3>Фото уходит вам</h3>
+          <p>Собранный букет фотографируется и отправляется вам в мессенджер. Курьер не выезжает, пока вы не ответите. Это тот шаг, ради которого стоит заказывать не на маркетплейсе.</p>
+        </article>
+
+        <article class="stop">
+          <div class="stop-slot">
+            <span class="tag">Фото 4</span>
+            <p class="brief">Упаковка: бумага, лента, открытка с рукописным текстом.</p>
+          </div>
+          <span class="stop-n">04 — 11:50</span>
+          <h3>Упаковка и открытка</h3>
+          <p>Текст открытки пишем от руки под вашу диктовку. Если отправка анонимная — имя не появится нигде, включая чек и разговор курьера.</p>
+        </article>
+
+        <article class="stop">
+          <div class="stop-slot">
+            <span class="tag">Фото 5</span>
+            <p class="brief">Курьер с букетом у двери или в машине, коробка-переноска.</p>
+          </div>
+          <span class="stop-n">05 — 12:20</span>
+          <h3>Курьер выехал</h3>
+          <p>Вы получаете сообщение о выезде и точное окно. После вручения — фото или подтверждение от получателя, как договоримся заранее.</p>
+        </article>
+
+      </div>
+    </div>
+
+    <div class="rail">
+      <div class="wrap" style="display:block">
+        <div style="display:flex;gap:2px">
+          <div class="rail-seg" data-seg><i></i></div>
+          <div class="rail-seg" data-seg><i></i></div>
+          <div class="rail-seg key" data-seg><i></i></div>
+          <div class="rail-seg" data-seg><i></i></div>
+          <div class="rail-seg" data-seg><i></i></div>
+        </div>
+        <div class="rail-labels">
+          <span>Привоз</span><span>Сборка</span><span>Фото вам</span><span>Упаковка</span><span>Курьер</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="height:400vh" aria-hidden="true" id="walk-track"></div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Готовые решения</p>
+      <h2>Выберите повод — остальное соберём сами</h2>
+      <p class="lede">Цена указана вместе с доставкой по Москве в пределах МКАД. В корзине она не вырастет.</p>
+    </div>
+    <div class="offers">
+
+      <article class="offer">
+        <div class="slot"><small>Фото реального букета этой линейки</small></div>
+        <div class="offer-body">
+          <span class="occ">День рождения</span>
+          <h3>Пионовидные розы, 15 шт.</h3>
+          <p class="comp">Розы, эвкалипт, крафт. Высота 50 см.</p>
+          <p class="price">3 200 ₽ <small>с доставкой</small></p>
+        </div>
+      </article>
+
+      <article class="offer">
+        <div class="slot"><small>Фото реального букета этой линейки</small></div>
+        <div class="offer-body">
+          <span class="occ">Просто так</span>
+          <h3>Сезонный микс</h3>
+          <p class="comp">Что сегодня лучшее в камере — состав назовём при подтверждении.</p>
+          <p class="price">4 500 ₽ <small>с доставкой</small></p>
+        </div>
+      </article>
+
+      <article class="offer">
+        <div class="slot"><small>Фото реального букета этой линейки</small></div>
+        <div class="offer-body">
+          <span class="occ">Извинение, важный повод</span>
+          <h3>Большой авторский</h3>
+          <p class="comp">Собирается под вас, состав обсуждаем в переписке.</p>
+          <p class="price">6 900 ₽ <small>с доставкой</small></p>
+        </div>
+      </article>
+
+      <article class="offer">
+        <div class="slot"><small>Фото реального букета этой линейки</small></div>
+        <div class="offer-body">
+          <span class="occ">Юбилей, выписка, свадьба</span>
+          <h3>Композиция под событие</h3>
+          <p class="comp">Обсуждаем заранее, привозим к назначенному часу.</p>
+          <p class="price">от 12 000 ₽ <small>с доставкой</small></p>
+        </div>
+      </article>
+
+    </div>
+    <p class="price-note">Цены на этой странице — образец, привязанный к московскому уровню рынка (средняя цена букета к 8 марта в Москве — 3 635 ₽). Замените на свои перед публикацией.</p>
+  </div>
+</section>
+
+<section class="proof">
+  <div class="wrap proof-grid">
+    <div>
+      <p class="eyebrow">Как это выглядит</p>
+      <h2 style="font-size:clamp(28px,3.6vw,42px);margin:14px 0 18px">Вы видите букет раньше получателя</h2>
+      <p class="lede">Главная претензия к доставке цветов звучит одинаково: «на фото был один букет, привезли другой». Мы закрыли этот вопрос буквально — присылаем снимок собранного букета и ждём вашего ответа.</p>
+      <p class="lede" style="margin-top:18px">Не понравился ракурс, оттенок, размер — говорите. Пересоберём, пока курьер ещё в мастерской. Это бесплатно и не считается претензией.</p>
+      <a class="btn" href="#zayavka" style="margin-top:26px">Заказать с фото-подтверждением</a>
+    </div>
+    <div class="chat">
+      <p class="chat-hd">Переписка по заказу №1042</p>
+      <div class="bub you">
+        <span class="shot">Сюда — настоящий скриншот отправленного клиенту фото букета.</span>
+        Собрали. Отправляем курьера?
+      </div>
+      <span class="chat-time">11:31</span>
+      <div class="bub them">А можно чуть больше зелени и без ленты?</div>
+      <span class="chat-time">11:34</span>
+      <div class="bub you">
+        <span class="shot">Второй кадр — пересобранный вариант.</span>
+        Готово. Так лучше?
+      </div>
+      <span class="chat-time">11:42</span>
+      <div class="bub them">Да, отлично. Везите.</div>
+      <span class="chat-time">11:43</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Гарантия свежести</p>
+      <h2>Обязательство в цифрах, а не в словах</h2>
+      <p class="lede">«Мы за качество» ничего не значит. Значит вот это:</p>
+    </div>
+    <div class="gua">
+      <div><b>5</b><p>суток букет стоит при обычном уходе. Простоял меньше — возвращаем стоимость на счёт или пересобираем заново.</p></div>
+      <div><b>24</b><p>часа на претензию с момента вручения. Нужны фото букета и пара слов — что не так.</p></div>
+      <div><b>3</b><p>рабочих дня на возврат денег. Не «до 21 дня», не «после рассмотрения».</p></div>
+      <div><b>0 ₽</b><p>стоит пересборка до выезда курьера. Пока букет в мастерской — он наш, а не ваш.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Как проходит заказ</p>
+      <h2>Четыре шага и время на каждом</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="t">0–5 минут</span><h3>Заявка</h3><p>Оставляете телефон и дату. Перезваниваем или пишем в мессенджер — как удобнее.</p></div>
+      <div class="step"><span class="t">5–15 минут</span><h3>Состав и цена</h3><p>Обсуждаем повод, бюджет и адрес. Называем итоговую сумму с доставкой — она больше не меняется.</p></div>
+      <div class="step"><span class="t">за 1–2 часа</span><h3>Сборка и фото</h3><p>Флорист собирает, вы получаете снимок и подтверждаете.</p></div>
+      <div class="step"><span class="t">в названное окно</span><h3>Доставка</h3><p>Сообщение о выезде, окно в два часа, подтверждение вручения.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Особые случаи</p>
+      <h2>Ситуации, из-за которых обычно не заказывают</h2>
+    </div>
+    <div class="scen">
+      <article>
+        <p class="q">«Я не знаю её адреса»</p>
+        <h3>Доставка по номеру телефона</h3>
+        <p>Оставьте только телефон получателя. Менеджер свяжется и согласует место и время сам — вам ничего выпытывать не придётся.</p>
+      </article>
+      <article>
+        <p class="q">«Не хочу, чтобы знали, что это я»</p>
+        <h3>Анонимная отправка</h3>
+        <p>Имя отправителя не называет ни курьер, ни открытка, ни поддержка. Даже если получатель будет настаивать.</p>
+      </article>
+      <article>
+        <p class="q">«Нужны документы и счёт»</p>
+        <h3>Юридическим лицам</h3>
+        <p>Работаем по договору, счёт и закрывающие документы. Оформление офисов и подарки партнёрам — с одним менеджером на все заказы.</p>
+      </article>
+      <article>
+        <p class="q">«Хочу цветы дома всё время»</p>
+        <h3>Подписка</h3>
+        <p>Букет раз в неделю или раз в две. Состав меняется по сезону, цена фиксируется на месяц вперёд.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="trust">
+  <div class="wrap trust-grid">
+    <div>
+      <p class="eyebrow">Кто собирает</p>
+      <h2 style="font-size:clamp(26px,3.2vw,36px);margin:14px 0 18px">У нас есть адрес, куда можно прийти</h2>
+      <p class="lede">Мастерская работает с <span class="ph">2018</span> года. Заходите — посмотрите камеру, стол и то, из чего собирается букет. Это то, чего не покажет ни один агрегатор.</p>
+      <div class="legal">
+        <span class="ph">ООО «Название»</span> · ИНН <span class="ph">0000000000</span><br>
+        <span class="ph">Москва, улица, дом</span> · ежедневно 8:00–22:00<br>
+        Реквизиты и адрес замените на свои перед публикацией.
+      </div>
+    </div>
+    <div>
+      <div class="slots-2">
+        <div class="pslot">Мастерская: общий план рабочего зала</div>
+        <div class="pslot">Флористы за работой, лица видно</div>
+        <div class="pslot">Витрина или вход с улицы</div>
+        <div class="pslot">Холодильная камера изнутри</div>
+      </div>
+      <div class="rev" style="margin-top:22px">
+        <p class="eyebrow">Отзывы</p>
+        <article>Здесь должны стоять настоящие отзывы, скопированные с вашей карточки в Яндекс.Картах или 2ГИС, со ссылкой на источник. Выдуманные отзывы в этой нише считываются мгновенно и работают против доверия.</article>
+        <article>Берите те, где клиент упоминает срок доставки или фото букета — они подтверждают ровно то, что обещает страница.</article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="form-sec" id="zayavka">
+  <div class="wrap form-grid">
+    <div>
+      <p class="eyebrow" style="color:color-mix(in srgb, var(--paper) 55%, transparent)">Заявка</p>
+      <h2 style="font-size:clamp(28px,3.6vw,42px);margin:14px 0 18px">Два поля. Остальное спросим сами</h2>
+      <p class="lede">Не нужно выбирать состав, считать доставку и регистрироваться. Скажите, когда и по какому поводу — дальше это наша работа.</p>
+      <div class="promise" style="margin-top:34px">
+        <div><b>5 мин</b><p>Ответим в рабочие часы, с 8:00 до 22:00.</p></div>
+        <div><b>0 ₽</b><p>Заявка ни к чему не обязывает и ничего не списывает.</p></div>
+        <div><b>1 звонок</b><p>Уточним всё за один разговор, не будем перезванивать пять раз.</p></div>
+      </div>
+    </div>
+    <form onsubmit="event.preventDefault();this.querySelector('.btn').textContent='Заявка отправлена';">
+      <label>Телефон
+        <input type="tel" name="phone" required placeholder="+7 ___ ___-__-__" autocomplete="tel">
+      </label>
+      <label>Когда нужен букет
+        <select name="when">
+          <option>Сегодня</option>
+          <option>Завтра</option>
+          <option>Выберу дату в разговоре</option>
+        </select>
+      </label>
+      <label>Повод — если хотите сказать сразу
+        <input type="text" name="occasion" placeholder="День рождения, извинение, просто так…">
+      </label>
+      <button class="btn" type="submit">Отправить заявку</button>
+      <p class="form-fine">Форма демонстрационная: она никуда не отправляет данные. Подключите её к своей CRM или мессенджеру перед публикацией.</p>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    Прототип посадочной страницы. Структура блоков и приоритет аргументов взяты из исследования ниши: срок доставки → полная цена → свои фотографии → фото букета до отправки → гарантия свежести → скорость ответа.<br>
+    Все реквизиты, цены, телефоны и отзывы — заглушки, помеченные пунктиром. Заменить перед публикацией.
+  </div>
+</footer>
+
+<script>
+(function(){
+  var walk = document.getElementById('walk');
+  var strip = document.getElementById('strip');
+  var track = document.getElementById('walk-track');
+  var segs = Array.prototype.slice.call(document.querySelectorAll('[data-seg]'));
+  if(!walk || !strip || !track) return;
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var narrow = window.matchMedia('(max-width: 700px)').matches;
+  if(reduced || narrow){ walk.classList.add('static'); track.style.height='0'; return; }
+
+  var maxShift = 0;
+  function measure(){
+    maxShift = Math.max(0, strip.scrollWidth - strip.parentElement.clientWidth);
+  }
+
+  var ticking = false;
+  function update(){
+    ticking = false;
+    var rect = walk.getBoundingClientRect();
+    var total = walk.offsetHeight - window.innerHeight;
+    if(total <= 0) return;
+    var p = Math.min(1, Math.max(0, -rect.top / total));
+    strip.style.transform = 'translate3d(' + (-p * maxShift).toFixed(1) + 'px,0,0)';
+    var per = 1 / segs.length;
+    segs.forEach(function(s, i){
+      s.classList.toggle('on', p >= (i + 1) * per - per * 0.45);
+    });
+  }
+  function onScroll(){
+    if(!ticking){ ticking = true; requestAnimationFrame(update); }
+  }
+
+  measure(); update();
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', function(){ measure(); update(); });
+})();
+</script>
