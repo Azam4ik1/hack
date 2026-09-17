@@ -1,4 +1,6 @@
--- TAAP schema for Hostinger Postgres. The cloud agent uses JSON files in taap/data/.
+-- TAAP schema for the isolated Hostinger Postgres in /home/taap.
+-- The Node process still uses JSON files in data/ for sessions/leads;
+-- this database is ready for the swap and is dumped daily.
 
 CREATE TABLE IF NOT EXISTS clients (
   chat_id TEXT PRIMARY KEY,

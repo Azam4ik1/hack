@@ -4,6 +4,7 @@
 
 import http from "node:http";
 import crypto from "node:crypto";
+import fs from "node:fs";
 import { handleTurn } from "./bot.js";
 import { env, loadEnv } from "./env.js";
 import { getMe, getWebhookInfo, parseUpdate, sendMessage, setWebhook, answerCallback } from "./telegram.js";
@@ -112,7 +113,10 @@ export async function start() {
   let webhookUrl = null;
   if (publicBase) {
     webhookUrl = `${publicBase}/telegram/webhook`;
-    await setWebhook(webhookUrl, secret);
+    const certPath = env("TELEGRAM_WEBHOOK_CERT");
+    const certificatePem =
+      certPath && fs.existsSync(certPath) ? fs.readFileSync(certPath, "utf8") : "";
+    await setWebhook(webhookUrl, secret, certificatePem || undefined);
   }
   const info = publicBase ? await getWebhookInfo() : { url: "" };
   console.log(

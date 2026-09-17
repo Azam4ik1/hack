@@ -31,4 +31,30 @@ node taap/tools/eval.mjs
 
 ## Hostinger VPS
 
-Copy the `taap/` folder to `/home/taap`, put secrets in `/home/taap/.env` (not on medcoll.tech), then `docker compose up -d --build`. Point `PUBLIC_BASE_URL` at that host’s https URL and open port 8081 (or a reverse proxy). Postgres schema is in `db/init.sql`; this build uses JSON files in `data/` until that swap.
+Separate Docker Compose project. Do not join the ejournal network, do not bind 80/443, and do not touch `medcoll.tech`.
+
+| Item | Value |
+| --- | --- |
+| Folder | `/home/taap` |
+| Compose project | `taap` |
+| Network | `taap_net` |
+| Public URL | `https://srv1957432.hstgr.cloud:8443` |
+| Webhook | `https://srv1957432.hstgr.cloud:8443/telegram/webhook` |
+
+Hostinger’s domain portfolio on this account is only `medcoll.tech` (college). That zone is left unchanged. The VPS hostname `srv1957432.hstgr.cloud` already points at the machine, so TAAP uses it on port **8443** (Telegram allows 443, 80, 88, 8443). A self-signed cert is uploaded to Telegram; Let’s Encrypt HTTP-01/TLS-ALPN would need 80/443, which belong to ejournal Caddy.
+
+```bash
+# on the VPS, as root
+install -d -m 700 /home/taap
+# copy this taap/ tree into /home/taap (no git secrets)
+cp /path/to/taap/.env.example /home/taap/.env
+# fill TYPESAFE_API_KEY, TELEGRAM_BOT_TOKEN, DB_PASSWORD, TELEGRAM_WEBHOOK_SECRET
+sh /home/taap/scripts/make-tls.sh /home/taap/certs
+cd /home/taap && docker compose up -d --build
+curl -sS http://127.0.0.1:8081/health
+curl -sk https://127.0.0.1:8443/health
+```
+
+Postgres is local to `taap_net` (not published on the host). Daily dumps stay in `/home/taap/backups` for 14 days. Sessions/leads are still JSON files under `data/` until the store swap; `db/init.sql` is applied on first boot.
+
+`OPERATOR_CHAT_ID` may stay empty: operator messages go to the on-disk queue.

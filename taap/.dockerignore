@@ -1,0 +1,9 @@
+data
+logs
+backups
+certs
+node_modules
+.env
+caddy-data
+caddy-config
+*.md

@@ -51,13 +51,38 @@ export async function answerCallback(id) {
   }
 }
 
-export async function setWebhook(url, secret) {
-  return call("setWebhook", {
-    url,
-    secret_token: secret,
-    allowed_updates: ["message", "callback_query"],
-    drop_pending_updates: true,
+export async function setWebhook(url, secret, certificatePem) {
+  if (!certificatePem) {
+    return call("setWebhook", {
+      url,
+      secret_token: secret || undefined,
+      allowed_updates: ["message", "callback_query"],
+      drop_pending_updates: true,
+    });
+  }
+  const form = new FormData();
+  form.set("url", url);
+  if (secret) {
+    form.set("secret_token", secret);
+  }
+  form.set("allowed_updates", JSON.stringify(["message", "callback_query"]));
+  form.set("drop_pending_updates", "true");
+  form.set(
+    "certificate",
+    new Blob([certificatePem], { type: "application/octet-stream" }),
+    "cert.pem",
+  );
+  const response = await fetch(`${apiRoot()}/setWebhook`, {
+    method: "POST",
+    body: form,
   });
+  const data = await response.json().catch(() => ({}));
+  if (!data.ok) {
+    const err = new Error("Telegram setWebhook failed");
+    err.status = response.status;
+    throw err;
+  }
+  return data.result;
 }
 
 export async function deleteWebhook() {
