@@ -4,3 +4,4 @@
 taap/logs/
 taap/node_modules/
 taap/.env
+taap/data/

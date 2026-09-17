@@ -2,47 +2,13 @@
  * Sole TypeSafe/Jev HTTP adapter. No databases, Telegram, or TAAP calls.
  */
 
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { env } from "./env.js";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const ENDPOINT = "https://api.typesafe.ai/v1/systemone";
 const MODEL = "jev-latest";
 
-function loadEnvFile(filePath) {
-  if (!fs.existsSync(filePath)) {
-    return;
-  }
-  const text = fs.readFileSync(filePath, "utf8");
-  for (const raw of text.split(/\r?\n/)) {
-    const line = raw.trim();
-    if (!line || line.startsWith("#") || !line.includes("=")) {
-      continue;
-    }
-    const eq = line.indexOf("=");
-    const name = line.slice(0, eq).trim();
-    let value = line.slice(eq + 1).trim();
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
-    }
-    if (name && process.env[name] === undefined) {
-      process.env[name] = value;
-    }
-  }
-}
-
 export function loadApiKey() {
-  if (!process.env.TYPESAFE_API_KEY) {
-    loadEnvFile(path.join(ROOT, ".env"));
-  }
-  if (!process.env.TYPESAFE_API_KEY) {
-    loadEnvFile(path.join(ROOT, "taap", ".env"));
-  }
-  const key = process.env.TYPESAFE_API_KEY || "";
+  const key = env("TYPESAFE_API_KEY");
   if (!key) {
     throw new Error("TYPESAFE_API_KEY is not set (process env or gitignored .env)");
   }
