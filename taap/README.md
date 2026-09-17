@@ -21,4 +21,4 @@ node --test taap/app/src/decide.test.js
 node taap/tools/eval.mjs
 ```
 
-Eval reads `taap/tools/fixtures.json`, then overlays `docs/taap-50-messages.md` from the project store when that file exists. Decisions are appended to `taap/logs/decisions.jsonl` (gitignored).
+Eval prefers the 50-message gold JSON, then the markdown set, then `taap/tools/fixtures.json`. Decisions are appended to `taap/logs/decisions.jsonl` (gitignored). `with_family` is labeled in gold but is not a Jev question here.

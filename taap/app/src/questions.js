@@ -19,11 +19,11 @@ export const ROUTING_QUESTIONS = {
       visa:
         "The client asks about a visa, entry stamp, visa documents, refusal, or extension — not about choosing a hotel.",
       prices:
-        "The client asks about hotel or booking prices, service commission, how to pay for a stay, or TAAP booking terms — not a currency exchange rate and not a request to pick a specific hotel.",
+        "The client asks about hotel or booking prices, commission, how to pay, breakfast-in-rate, cancellation or refund *policy* — without a story that a booking already failed. Not a currency exchange rate, and not a request to pick a specific hotel.",
       complaint:
-        "Complaint, refund demand, accusation of fraud, a failed booking blamed on us, or hostility toward the service.",
+        "Complaint, refund demand after a failed or missing booking, accusation of fraud, hostility toward the service, or anger that the bot is looping / sending templates and they want a human. A single-word «оператор» with no grievance is other, not complaint.",
       greeting:
-        "Greeting, thanks, or a short acknowledgement with no hotel, visa, price, or complaint task. If they greet and then ask for a hotel, that is hotel, not greeting.",
+        "Greeting, thanks, or a short acknowledgement. Also a hello plus generic «I need help» / «кумак лозим аст» with no hotel, visa, price, or complaint details. If they greet and then ask for a hotel, that is hotel, not greeting.",
       other:
         "Off-topic: currency rates, weather, sports, news, politics, or a bare «оператор» / transfer-to-human with no complaint about a booking.",
     },
@@ -31,7 +31,7 @@ export const ROUTING_QUESTIONS = {
   destination: {
     type: "choice",
     instructions:
-      "Which travel country is named in `message`? A city counts as its country. If several are named, pick the main one.",
+      "Which travel country is named in `message`? A city counts as its country. If several trip countries are named, pick the main one. Ignore the client's home country (Tajikistan / Тоҷикистон) and citizenship; those are not the destination. If only home or payment currency is named, choose unnamed.",
     criteria: {
       uae: "UAE / ОАЭ: Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah, or the country as a whole.",
       turkey:
