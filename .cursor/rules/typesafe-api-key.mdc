@@ -1,0 +1,11 @@
+---
+description: Load TypeSafe/Jev API key from env or gitignored .env; never commit or print it.
+alwaysApply: true
+---
+
+When using the TypeSafe skill, Jev, or `typesafe-sdk`, authenticate with `TYPESAFE_API_KEY`.
+
+- Read it from the process environment. If unset, load the gitignored `.env` at the repo root (`set -a && [ -f .env ] && . ./.env && set +a`).
+- Do not print, log, or commit the value. Do not put it in PRs, skill files, notes, or docs.
+- `.env.example` is the tracked empty template (`TYPESAFE_API_KEY=`).
+- `TypeSafeClient()` reads `TYPESAFE_API_KEY` automatically once it is in the environment.

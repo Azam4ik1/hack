@@ -147,3 +147,26 @@ inspect the exact state, questions, candidates, answers, composition, and observ
 outcome. Separate missing evidence, model errors, code errors, and service failures.
 Treat cookbook thresholds and demo results as examples to evaluate, not universal
 rules or permanent model limitations. Keep API credentials server-side in web apps.
+
+## Credentials
+
+The TypeSafe SDK and HTTP API authenticate with `TYPESAFE_API_KEY` (see
+[Python SDK constants](https://docs.typesafe.ai/sdk/python/api/constants.md)).
+Jev calls will fail without it.
+
+**How to load the key in this project:**
+
+1. Prefer the process environment variable `TYPESAFE_API_KEY`.
+2. If it is unset, load the gitignored project `.env` at the repo root (a
+   no-value template lives in `.env.example`). In a shell:
+
+   ```bash
+   set -a && [ -f .env ] && . ./.env && set +a
+   ```
+
+   In Python, read `.env` into `os.environ` only when the variable is missing.
+   `TypeSafeClient()` / `AsyncTypeSafeClient()` then pick it up automatically.
+3. Never print, log, commit, or paste the key. Never put it in PRs, skill
+   files, notes, docs, or any tracked file.
+4. If the variable is still missing after loading `.env`, stop and ask the
+   user to set it. Do not invent a key.
