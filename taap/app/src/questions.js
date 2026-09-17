@@ -19,13 +19,13 @@ export const ROUTING_QUESTIONS = {
       visa:
         "The client asks about a visa, entry stamp, visa documents, refusal, or extension — not about choosing a hotel.",
       prices:
-        "The client asks about rates, service commission, how payment works, or booking terms, without asking to pick a specific hotel.",
+        "The client asks about hotel or booking prices, service commission, how to pay for a stay, or TAAP booking terms — not a currency exchange rate and not a request to pick a specific hotel.",
       complaint:
         "Complaint, refund demand, accusation of fraud, a failed booking blamed on us, or hostility toward the service.",
       greeting:
-        "Greeting, thanks, or a short acknowledgement (ok, хорошо) with no new task.",
+        "Greeting, thanks, or a short acknowledgement with no hotel, visa, price, or complaint task. If they greet and then ask for a hotel, that is hotel, not greeting.",
       other:
-        "Off-topic, or it is not a hotel, visa, prices, complaint, or greeting request.",
+        "Off-topic: currency rates, weather, sports, news, politics, or a bare «оператор» / transfer-to-human with no complaint about a booking.",
     },
   },
   destination: {
@@ -38,8 +38,10 @@ export const ROUTING_QUESTIONS = {
         "Turkey / Турция: Istanbul, Antalya, Alanya, Kemer, Bodrum, or the country as a whole.",
       egypt:
         "Egypt / Египет: Hurghada, Sharm el-Sheikh, Cairo, Dahab, or the country as a whole.",
+      germany:
+        "Germany / Германия: Berlin, Frankfurt, Munich, or the country as a whole.",
       unnamed: "No country or city is named.",
-      other: "A country is named, but it is not UAE, Turkey, or Egypt.",
+      other: "A country is named, but it is not UAE, Turkey, Egypt, or Germany.",
     },
   },
   to_human: {
@@ -56,12 +58,13 @@ export const ROUTING_QUESTIONS = {
   lead_score: {
     type: "score",
     instructions:
-      "How close is the client in `message` to sending a housing request through this service? Visa questions are not a purchase.",
+      "How close is the client in `message` to sending a housing booking request through this service? Visa questions are not a purchase. Level 1 is farthest from a booking; level 5 is ready to book now.",
     criteria: [
-      "Not about a trip: greeting, off-topic, or a complaint unrelated to booking now.",
-      "General info or visa; no dates and no ask to book housing.",
-      "Named a destination or dates and is still choosing; does not ask to book yet.",
-      "Wants to leave a request or get a booking link now.",
+      "Far from booking: greeting, off-topic, or a complaint — no request to stay somewhere.",
+      "General info or a visa question; not asking to pick or book a stay.",
+      "Named a destination or is exploring a stay, but is not ready to book.",
+      "Has several trip details (place, dates, or people) and is close to a request, but does not yet ask to book.",
+      "Ready to book or explicitly asks to reserve / send a booking link now.",
     ],
   },
 };
@@ -71,12 +74,12 @@ export const HOTEL_QUESTIONS = {
   slots_complete: {
     type: "noul",
     instructions:
-      "If `message` is about finding a place to stay: does it already have enough of destination, dates, and guest count to search? Budget is optional.",
+      "If `message` is about finding a place to stay: does it already contain destination, dates, number of people, AND a budget — all four?",
     criteria: {
       true:
-        "A destination (city or country) and dates are present, and guest count or family/solo is clear.",
+        "Destination (city or country), dates, guest count, and a budget are all present.",
       false:
-        "Destination, dates, or who is travelling is missing, or the message is not about housing search.",
+        "Any of destination, dates, guests, or budget is missing, or the message is not a housing search.",
     },
   },
   budget_level: {
@@ -84,19 +87,18 @@ export const HOTEL_QUESTIONS = {
     instructions: "What housing budget level is expressed in `message`?",
     criteria: [
       "No budget is named or implied.",
-      "Cheap / economy / hostel / the cheapest option.",
-      "Mid-range ordinary hotel, no extremes.",
-      "Luxury, 5-star, expensive, or price does not matter.",
+      "Cheap / economy / hostel / the cheapest option (low).",
+      "Mid-range ordinary hotel, no extremes (mid).",
+      "Luxury, 5-star, expensive, or price does not matter (high).",
     ],
   },
   flexible_dates: {
-    type: "noul",
-    instructions: "Does `message` say the travel dates are flexible?",
+    type: "choice",
+    instructions: "Are the travel dates in `message` flexible?",
     criteria: {
-      true:
-        "The client clearly can move dates (plus/minus days, «примерно», «не принципиально»).",
-      false:
-        "Dates are fixed, dates are absent, or flexibility is not stated.",
+      yes: "The client clearly can move dates (plus/minus days, «примерно», «санаҳояшро тағйир»).",
+      no: "Exact or fixed dates are given and flexibility is not offered.",
+      unspecified: "Dates are absent, or flexibility is not stated.",
     },
   },
 };

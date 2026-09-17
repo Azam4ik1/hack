@@ -1,10 +1,10 @@
 /**
  * Accuracy harness for the TAAP Jev layer.
  *
- *   cd taap && node tools/eval.mjs
+ *   node taap/tools/eval.mjs
  *
- * Loads tools/fixtures.json, then overlays docs/taap-50-messages.md when that
- * labeled set exists. Never prints TYPESAFE_API_KEY.
+ * Prefers docs/taap-50-messages.md when present; otherwise seed fixtures.
+ * Never prints TYPESAFE_API_KEY.
  */
 
 import fs from "node:fs";
@@ -17,62 +17,132 @@ const ROOT = path.resolve(HERE, "../..");
 const LABELED_MD = path.join(
   "/cursor/stores/bc-be797ad2-42dd-4b4f-a6f1-65ed289f5f65/docs/taap-50-messages.md",
 );
+const LABELED_JSON = path.join(
+  "/cursor/stores/bc-be797ad2-42dd-4b4f-a6f1-65ed289f5f65/internal/taap-50-messages.json",
+);
+
+const DEST_MAP = {
+  "ОАЭ": "uae",
+  "Турция": "turkey",
+  "Египет": "egypt",
+  "Германия": "germany",
+  "не названа": "unnamed",
+  uae: "uae",
+  turkey: "turkey",
+  egypt: "egypt",
+  germany: "germany",
+  unnamed: "unnamed",
+};
+
+const YES_NO = { да: true, нет: false, yes: true, no: false };
+const FLEX_MAP = { да: "yes", нет: "no", "не указано": "unspecified" };
+const BUDGET_LEVELS = ["unspecified", "low", "mid", "high"];
 
 function loadJsonFixtures() {
-  const file = path.join(HERE, "fixtures.json");
-  return JSON.parse(fs.readFileSync(file, "utf8"));
+  return JSON.parse(fs.readFileSync(path.join(HERE, "fixtures.json"), "utf8"));
 }
 
-function parseMarkdownLabeled(filePath) {
+function flexGold(value) {
+  if (value === true) {
+    return "yes";
+  }
+  if (value === false) {
+    return "no";
+  }
+  if (value === null) {
+    return "unspecified";
+  }
+  return undefined;
+}
+
+export function loadLabeledJson(filePath) {
+  if (!fs.existsSync(filePath)) {
+    return { items: [], source: null };
+  }
+  const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+  const messages = data.messages || [];
+  const items = messages.map((row) => {
+    const hotel = row.intent === "hotel";
+    return {
+      id: String(row.id).padStart(2, "0"),
+      lang: row.lang,
+      message: row.text,
+      intent: row.intent,
+      destination: row.destination,
+      to_human: row.to_human,
+      lead_score: row.lead_score,
+      slots_complete: hotel ? row.slots_complete : undefined,
+      budget_level: hotel ? row.budget_level : undefined,
+      flexible_dates: hotel ? flexGold(row.flexible_dates) : undefined,
+      city: row.destination && row.destination !== "unnamed" ? row.destination : null,
+      date: row.flexible_dates === false || row.slots_complete === true ? "present" : null,
+      jailbreak: row.jailbreak,
+      operator_escape: row.operator_escape,
+    };
+  });
+  return { items, source: filePath };
+}
+
+function yn(value) {
+  if (value === undefined) {
+    return undefined;
+  }
+  const mapped = YES_NO[String(value).trim().toLowerCase()];
+  return mapped;
+}
+
+export function parseMarkdownLabeled(filePath) {
   if (!fs.existsSync(filePath)) {
     return { items: [], source: null };
   }
   const text = fs.readFileSync(filePath, "utf8");
-  const jsonBlock = text.match(/```json\s*([\s\S]*?)```/);
-  if (jsonBlock) {
-    const parsed = JSON.parse(jsonBlock[1]);
-    const items = Array.isArray(parsed) ? parsed : parsed.messages || parsed.items || [];
-    return { items, source: filePath };
-  }
-  const lines = text.split(/\r?\n/);
-  const header = lines.find((line) => /^\|.+\|/.test(line) && /intent/i.test(line));
-  if (!header) {
-    return { items: [], source: filePath, parseError: "no json fence or intent table" };
-  }
-  const cols = header
-    .split("|")
-    .map((c) => c.trim().toLowerCase())
-    .filter(Boolean);
   const items = [];
-  for (const line of lines) {
-    if (!line.startsWith("|") || /---/.test(line) || line === header) {
-      continue;
-    }
-    const cells = line
-      .split("|")
-      .map((c) => c.trim())
-      .filter((_, i, arr) => i > 0 && i < arr.length - 1);
-    if (cells.length !== cols.length) {
-      continue;
-    }
-    const row = {};
-    cols.forEach((name, i) => {
-      row[name] = cells[i];
-    });
-    const message = row.message || row.text || row.msg;
-    if (!message || message === "message") {
-      continue;
+  const blockRe =
+    /\*\*(\d+)\*\*\s*·\s*`([^`]+)`\s*·\s*(\w+)\s*·\s*([^·\n]+?)((?:\s*·\s*[^\n]+)*)\n+\n>\s*(.+)/g;
+  let match;
+  while ((match = blockRe.exec(text))) {
+    const id = match[1];
+    const lang = match[2].trim();
+    const intent = match[3].trim();
+    const destRaw = match[4].trim();
+    const rest = match[5] || "";
+    const message = match[6].trim();
+    const flags = {};
+    for (const part of rest.split("·")) {
+      const piece = part.trim();
+      if (!piece) {
+        continue;
+      }
+      const eq = piece.indexOf("=");
+      if (eq === -1) {
+        flags[piece] = true;
+        continue;
+      }
+      flags[piece.slice(0, eq).trim()] = piece.slice(eq + 1).trim();
     }
     items.push({
-      id: row.id || `md-${items.length + 1}`,
+      id,
+      lang,
       message,
-      intent: row.intent || undefined,
-      destination: row.destination || row.dest || undefined,
-      city: row.city || undefined,
-      date: row.date || undefined,
+      intent,
+      destination: DEST_MAP[destRaw] || destRaw,
+      to_human: yn(flags.to_human),
+      lead_score: flags.lead ? Number(flags.lead) : undefined,
+      slots_complete: yn(flags.slots),
+      budget_level: flags.budget || undefined,
+      flexible_dates: flags.flex ? FLEX_MAP[flags.flex] || flags.flex : undefined,
+      with_family: flags.family,
+      operator_escape: Boolean(flags.operator_escape) || rest.includes("operator_escape"),
+      jailbreak: Boolean(flags.jailbreak) || rest.includes("jailbreak"),
+      city: DEST_MAP[destRaw] && DEST_MAP[destRaw] !== "unnamed" ? destRaw : null,
+      date: flags.flex === "нет" || flags.slots === "да" ? "present" : null,
     });
   }
-  return { items, source: filePath };
+  return {
+    items,
+    source: filePath,
+    parseError: items.length ? null : "no numbered message blocks",
+  };
 }
 
 function mergeFixtures(seed, labeled) {
@@ -89,19 +159,74 @@ function fieldMatch(got, expected) {
   return String(got) === String(expected);
 }
 
+function roundScore(score) {
+  if (score === undefined || score === null || Number.isNaN(Number(score))) {
+    return null;
+  }
+  return Math.round(Number(score));
+}
+
+function noulYes(noul) {
+  if (noul === undefined || noul === null) {
+    return null;
+  }
+  return Number(noul) >= 0.5;
+}
+
+function tally(store, ok) {
+  if (ok === null) {
+    return;
+  }
+  store.total += 1;
+  if (ok) {
+    store.hit += 1;
+  }
+}
+
+function pct(store) {
+  if (!store.total) {
+    return null;
+  }
+  return {
+    accuracy: `${store.hit}/${store.total}`,
+    pct: Number((store.hit / store.total).toFixed(4)),
+  };
+}
+
 async function main() {
+  if (process.argv.includes("--parse-only")) {
+    const labeled = loadLabeledJson(LABELED_JSON);
+    const fallback = labeled.items.length ? labeled : parseMarkdownLabeled(LABELED_MD);
+    console.log(
+      JSON.stringify(
+        {
+          n: fallback.items.length,
+          source: fallback.source,
+          intents: fallback.items.reduce((acc, row) => {
+            acc[row.intent] = (acc[row.intent] || 0) + 1;
+            return acc;
+          }, {}),
+        },
+        null,
+        2,
+      ),
+    );
+    return;
+  }
+
   const seed = loadJsonFixtures();
-  const labeled = parseMarkdownLabeled(LABELED_MD);
+  const fromJson = loadLabeledJson(LABELED_JSON);
+  const labeled = fromJson.items.length ? fromJson : parseMarkdownLabeled(LABELED_MD);
   const { items, used } = mergeFixtures(seed, labeled.items);
 
   const stats = {
-    n: items.length,
-    source: used,
-    labeledPath: labeled.source,
-    labeledCount: labeled.items.length,
-    parseError: labeled.parseError || null,
     intent: { hit: 0, total: 0 },
     destination: { hit: 0, total: 0 },
+    to_human: { hit: 0, total: 0 },
+    lead_score: { hit: 0, total: 0 },
+    slots_complete: { hit: 0, total: 0 },
+    budget_level: { hit: 0, total: 0 },
+    flexible_dates: { hit: 0, total: 0 },
     latencies: [],
     rows: [],
   };
@@ -113,20 +238,33 @@ async function main() {
     });
     const gotIntent = result.answers.intent?.choice;
     const gotDest = result.answers.destination?.choice;
+    const gotToHuman = noulYes(result.answers.to_human?.noul);
+    const leadRounded = roundScore(result.answers.lead_score?.score);
+    const gotLead = leadRounded === null ? null : leadRounded + 1;
+    const gotSlots = noulYes(result.answers.slots_complete?.noul);
+    const gotBudget = BUDGET_LEVELS[roundScore(result.answers.budget_level?.score)] || null;
+    const gotFlex = result.answers.flexible_dates?.choice;
+
     const intentOk = fieldMatch(gotIntent, item.intent);
     const destOk = fieldMatch(gotDest, item.destination);
-    if (intentOk !== null) {
-      stats.intent.total += 1;
-      if (intentOk) {
-        stats.intent.hit += 1;
-      }
-    }
-    if (destOk !== null) {
-      stats.destination.total += 1;
-      if (destOk) {
-        stats.destination.hit += 1;
-      }
-    }
+    const toHumanOk =
+      item.to_human === undefined ? null : gotToHuman === item.to_human;
+    const leadOk =
+      item.lead_score === undefined ? null : gotLead === item.lead_score;
+    const slotsOk =
+      item.slots_complete === undefined
+        ? null
+        : gotSlots === item.slots_complete;
+    const budgetOk = fieldMatch(gotBudget, item.budget_level);
+    const flexOk = fieldMatch(gotFlex, item.flexible_dates);
+
+    tally(stats.intent, intentOk);
+    tally(stats.destination, destOk);
+    tally(stats.to_human, toHumanOk);
+    tally(stats.lead_score, leadOk);
+    tally(stats.slots_complete, slotsOk);
+    tally(stats.budget_level, budgetOk);
+    tally(stats.flexible_dates, flexOk);
     stats.latencies.push(result.latencyMs);
     stats.rows.push({
       id: item.id,
@@ -135,12 +273,16 @@ async function main() {
       intent_confidence: result.answers.intent?.confidence,
       expected_destination: item.destination,
       got_destination: gotDest,
-      dest_confidence: result.answers.destination?.confidence,
-      to_human: result.answers.to_human?.noul,
-      lead_score: result.answers.lead_score?.score,
-      slots_complete: result.answers.slots_complete?.noul,
-      budget_level: result.answers.budget_level?.score,
-      flexible_dates: result.answers.flexible_dates?.noul,
+      to_human_gold: item.to_human,
+      to_human_noul: result.answers.to_human?.noul,
+      lead_gold: item.lead_score,
+      lead_pred: Number.isFinite(gotLead) ? gotLead : null,
+      slots_gold: item.slots_complete,
+      slots_pred: gotSlots,
+      budget_gold: item.budget_level,
+      budget_pred: gotBudget,
+      flex_gold: item.flexible_dates,
+      flex_pred: gotFlex,
       action: result.decision.action,
       path: result.decision.path,
       reason: result.decision.reason,
@@ -152,45 +294,32 @@ async function main() {
   }
 
   stats.latencies.sort((a, b) => a - b);
-  const mid = stats.latencies[Math.floor(stats.latencies.length / 2)];
+  const mid = stats.latencies[Math.floor(stats.latencies.length / 2)] || null;
+  const intent = pct(stats.intent);
   const report = {
-    source: stats.source,
-    labeled_file: stats.labeledPath,
-    labeled_parsed: stats.labeledCount,
-    labeled_parse_error: stats.parseError,
-    n: stats.n,
-    intent_accuracy:
-      stats.intent.total === 0
-        ? null
-        : `${stats.intent.hit}/${stats.intent.total}`,
-    destination_accuracy:
-      stats.destination.total === 0
-        ? null
-        : `${stats.destination.hit}/${stats.destination.total}`,
-    intent_pct:
-      stats.intent.total === 0
-        ? null
-        : Number((stats.intent.hit / stats.intent.total).toFixed(4)),
-    destination_pct:
-      stats.destination.total === 0
-        ? null
-        : Number((stats.destination.hit / stats.destination.total).toFixed(4)),
+    source: used,
+    labeled_file: labeled.source,
+    labeled_parsed: labeled.items.length,
+    labeled_parse_error: labeled.parseError,
+    n: items.length,
+    intent_accuracy: intent?.accuracy || null,
+    intent_pct: intent?.pct ?? null,
+    destination: pct(stats.destination),
+    to_human: pct(stats.to_human),
+    lead_score: pct(stats.lead_score),
+    slots_complete: pct(stats.slots_complete),
+    budget_level: pct(stats.budget_level),
+    flexible_dates: pct(stats.flexible_dates),
     median_latency_ms: mid,
-    max_latency_ms: stats.latencies[stats.latencies.length - 1],
+    max_latency_ms: stats.latencies[stats.latencies.length - 1] || null,
     stage1_intent_target: 0.9,
-    stage1_pass:
-      stats.intent.total > 0
-        ? stats.intent.hit / stats.intent.total > 0.9
-        : null,
+    stage1_pass: intent ? intent.pct > 0.9 : null,
     rows: stats.rows,
   };
 
   const outDir = path.join(ROOT, "taap/logs");
   fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(
-    path.join(outDir, "eval-last.json"),
-    JSON.stringify(report, null, 2),
-  );
+  fs.writeFileSync(path.join(outDir, "eval-last.json"), JSON.stringify(report, null, 2));
 
   console.log(
     JSON.stringify(
@@ -199,7 +328,12 @@ async function main() {
         labeled_parsed: report.labeled_parsed,
         n: report.n,
         intent_accuracy: report.intent_accuracy,
-        destination_accuracy: report.destination_accuracy,
+        destination: report.destination,
+        to_human: report.to_human,
+        lead_score: report.lead_score,
+        slots_complete: report.slots_complete,
+        budget_level: report.budget_level,
+        flexible_dates: report.flexible_dates,
         median_latency_ms: report.median_latency_ms,
         stage1_pass: report.stage1_pass,
       },
@@ -215,7 +349,10 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(err.message || String(err));
-  process.exit(1);
-});
+const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMain) {
+  main().catch((err) => {
+    console.error(err.message || String(err));
+    process.exit(1);
+  });
+}
