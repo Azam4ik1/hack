@@ -14,6 +14,7 @@ import {
   markOperatorWelcomeSent,
   operatorWelcomeSent,
 } from "./store.js";
+import { loadVisaKb } from "./visa.js";
 import { getMe, getWebhookInfo, parseUpdate, sendMessage, setWebhook, answerCallback } from "./telegram.js";
 
 const PORT = Number(env("PORT", "8081"));
@@ -98,6 +99,7 @@ export function createServer() {
         typesafe: Boolean(env("TYPESAFE_API_KEY")),
         operator: Boolean(getOperatorChatId()),
         admin: Boolean(env("ADMIN_TOKEN")),
+        visa: loadVisaKb().rules.length > 0,
       });
       return;
     }

@@ -73,6 +73,7 @@ test("health mentions operator and admin flags", async () => {
   assert.equal(res.service, "taap");
   assert.equal(typeof res.operator, "boolean");
   assert.equal(res.admin, true);
+  assert.equal(res.visa, true);
 });
 
 test.after(() => server.close());
