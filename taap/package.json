@@ -1,0 +1,14 @@
+{
+  "name": "taap-jev",
+  "private": true,
+  "type": "module",
+  "description": "TAAP booking consultant: Telegram bot + Jev routing/hotel layer.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node app/src/server.js",
+    "eval": "node tools/eval.mjs",
+    "test": "node --test --test-concurrency=1 app/src/*.test.js"
+  }
+}

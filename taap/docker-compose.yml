@@ -1,0 +1,112 @@
+# Isolated TAAP stack. Do not join ejournal networks or bind 80/443 (ejournal Caddy).
+name: taap
+
+services:
+  app:
+    build: .
+    env_file:
+      - .env
+    environment:
+      PORT: "8081"
+      TAAP_DATA_DIR: /app/data
+      TAAP_LOG_DIR: /app/logs
+      TELEGRAM_WEBHOOK_CERT: /app/certs/tls.crt
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./certs:/app/certs:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8081:8081"
+    networks:
+      - taap
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:8081/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: taap
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: taap
+    volumes:
+      - taap_pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./db/seed-visa.sql:/docker-entrypoint-initdb.d/02-seed-visa.sql:ro
+    networks:
+      - taap
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taap -d taap"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backup:
+    image: postgres:17-alpine
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${DB_PASSWORD}
+      PGHOST: db
+      PGUSER: taap
+      PGDATABASE: taap
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup.sh:/scripts/backup.sh:ro
+    entrypoint: ["/bin/sh", "/scripts/backup.sh"]
+    networks:
+      - taap
+    healthcheck:
+      test: ["CMD-SHELL", "test -d /backups"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      TAAP_TLS_HOST: ${TAAP_TLS_HOST:-srv1957432.hstgr.cloud}
+    ports:
+      - "8443:8443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./certs:/certs:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - taap
+    healthcheck:
+      test: ["CMD", "caddy", "version"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+networks:
+  taap:
+    name: taap_net
+    driver: bridge
+
+volumes:
+  taap_pgdata:
+  caddy_data:
+  caddy_config:

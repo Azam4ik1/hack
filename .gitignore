@@ -1,0 +1,11 @@
+.env
+.env.local
+.env.*.local
+taap/logs/
+taap/node_modules/
+taap/.env
+taap/data/
+taap/backups/
+taap/certs/
+taap/caddy-data/
+taap/caddy-config/
