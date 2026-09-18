@@ -27,6 +27,9 @@ export function isOperatorEscape(text) {
   if (lower === "оператор" || lower === "operator") {
     return true;
   }
+  if (/^\/operator(?:@\w+)?$/i.test(raw)) {
+    return true;
+  }
   return /(?:^|[^\p{L}])оператор(?:[^\p{L}]|$)/iu.test(raw);
 }
 

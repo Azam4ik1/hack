@@ -9,6 +9,7 @@ services:
     environment:
       PORT: "8081"
       TAAP_DATA_DIR: /app/data
+      TAAP_LOG_DIR: /app/logs
       TELEGRAM_WEBHOOK_CERT: /app/certs/tls.crt
     volumes:
       - ./data:/app/data

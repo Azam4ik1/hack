@@ -4,9 +4,20 @@
 
 import { decide } from "./decide.js";
 import { extract, isOperatorEscape, looksLikeSecret, mergeSlots, missingSlot, slotsComplete } from "./extract.js";
+import { env } from "./env.js";
 import { judgeMessage } from "./index.js";
 import { logDecision } from "./log.js";
-import { emptySlots, getSession, logDialog, queueOperator, resetSession, saveLead, saveSession } from "./store.js";
+import {
+  emptySlots,
+  getOperatorChatId,
+  getSession,
+  logDialog,
+  queueOperator,
+  resetSession,
+  saveLead,
+  saveSession,
+  setOperatorChatId,
+} from "./store.js";
 
 export const MENU_KEYBOARD = {
   inline_keyboard: [
@@ -60,6 +71,16 @@ function welcome() {
 
 export function operatorCopy() {
   return "Передал оператору. Напишите ещё что нужно передать — или /start, чтобы вернуться в меню.";
+}
+
+export function helpCopy() {
+  return withMenu(
+    "ArzonTur собирает заявки на жильё за границей (ОАЭ, Турция, Египет). Ссылку Booking/TAAP пока не даём.\n\nКнопки меню или напишите город и даты. Жалобы и слово «оператор» сразу человеку.\n\nВизовая справка в боте ещё не подключена — это не агентство и не консульство.\n\nArzonTur дархости манзилро ҷамъ мекунад. «оператор» нависед — инсон ҷавоб медиҳад.",
+  );
+}
+
+export function operatorClaimCopy() {
+  return "Этот чат назначен операторским. Спорные диалоги и заявки будут приходить сюда. Клиентское меню: /start без кода.";
 }
 
 function pricesCopy() {
@@ -127,7 +148,7 @@ async function handoff(session, ctx, reason, judged) {
       decision: { action: "operator", path: "human", reason },
     });
   }
-  const operatorId = ctx.operatorChatId;
+  const operatorId = ctx.operatorChatId || getOperatorChatId() || null;
   const notify = [];
   if (operatorId) {
     notify.push({
@@ -179,11 +200,20 @@ export async function handleTurn(ctx, deps = {}) {
   const text = normalizeIncoming(ctx);
   logDialog({ chatId: session.chatId, direction: "in", text, callback: ctx.callbackData || null });
 
+  const claimed = tryClaimOperator(ctx, text);
+  if (claimed) {
+    return claimed;
+  }
+
   if (ctx.callbackData === "menu:operator" || (text && isOperatorEscape(text))) {
     return handoff(session, { ...ctx, text: text || "оператор" }, "operator_escape", null);
   }
 
-  if (text === "/start" || /^\/start\b/i.test(text || "") || /^меню$/i.test(text || "")) {
+  if (/^\/help(?:@\w+)?$/i.test(text || "")) {
+    return { replies: [helpCopy()], session };
+  }
+
+  if (text === "/start" || /^\/start(?:@\w+)?(?:\s|$)/i.test(text || "") || /^меню$/i.test(text || "")) {
     resetSession(ctx.chatId);
     return { replies: [welcome()], session: getSession(ctx.chatId) };
   }
@@ -206,8 +236,17 @@ export async function handleTurn(ctx, deps = {}) {
       reason: "followup",
       text,
     });
+    const operatorId = ctx.operatorChatId || getOperatorChatId() || null;
+    const notify = [];
+    if (operatorId && String(operatorId) !== String(session.chatId)) {
+      notify.push({
+        chatId: operatorId,
+        text: `Дополнение от клиента ${session.chatId} @${ctx.username || "-"}\n${text || ""}`.slice(0, 3500),
+      });
+    }
     return {
       replies: [reply("Передал оператору.")],
+      notify,
       session,
     };
   }
@@ -219,7 +258,7 @@ export async function handleTurn(ctx, deps = {}) {
       judged = await judge(text, {
         city: extracted.city || session.slots.city,
         date: extracted.dates || session.slots.dates,
-      });
+      }, { chatId: session.chatId });
       if (judged.decision.action === "operator") {
         return handoff(session, ctx, judged.decision.reason, judged);
       }
@@ -235,7 +274,7 @@ export async function handleTurn(ctx, deps = {}) {
     judged = await judge(text || "", {
       city: extracted.city || session.slots.city,
       date: extracted.dates || session.slots.dates,
-    });
+    }, { chatId: session.chatId });
   } catch {
     return {
       replies: [
@@ -269,6 +308,34 @@ export async function handleTurn(ctx, deps = {}) {
       withMenu("Не уверен, что нужно. Можно подобрать жильё, спросить про условия или позвать оператора."),
     ],
     session,
+  };
+}
+
+function tryClaimOperator(ctx, text) {
+  const match = String(text || "").trim().match(/^\/start(?:@\w+)?(?:\s+(\S+))?$/i);
+  if (!match || !match[1]) {
+    return null;
+  }
+  const token = env("OPERATOR_CLAIM_TOKEN");
+  if (!token) {
+    return null;
+  }
+  const payload = match[1];
+  if (payload !== token && payload !== `op_${token}`) {
+    return null;
+  }
+  const existing = getOperatorChatId();
+  if (existing && existing !== String(ctx.chatId)) {
+    return {
+      replies: [withMenu("Оператор уже назначен в другом чате. Это клиентское меню.")],
+      session: getSession(ctx.chatId),
+    };
+  }
+  setOperatorChatId(ctx.chatId, ctx.username || null);
+  return {
+    replies: [reply(operatorClaimCopy())],
+    session: getSession(ctx.chatId),
+    claimedOperator: true,
   };
 }
 

@@ -45,11 +45,12 @@ export function hotelMessage(message) {
  * Routing + hotel in one Jev call (speculative fan-out).
  * Code consumes hotel answers only when the path is hotel/prices.
  */
-export async function judgeMessage(message, extracted = {}) {
+export async function judgeMessage(message, extracted = {}, meta = {}) {
   const judged = await ask(message, ALL_QUESTIONS);
   const decision = decide(judged.answers, extracted);
   const record = logDecision({
     message,
+    chatId: meta.chatId || null,
     extracted,
     model: judged.model,
     usage: judged.usage,

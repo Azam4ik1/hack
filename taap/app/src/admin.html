@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ArzonTur — разбор</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #14110e;
+      --panel: #1e1914;
+      --line: #3a3229;
+      --text: #f3ece3;
+      --muted: #b7a896;
+      --accent: #e0a45a;
+      --bad: #e07a5f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+    header {
+      padding: 1.2rem 1.4rem 0.6rem;
+      border-bottom: 1px solid var(--line);
+    }
+    header p { color: var(--muted); margin: 0.3rem 0 0; }
+    nav { display: flex; gap: 0.5rem; padding: 0.8rem 1.4rem; flex-wrap: wrap; }
+    button.tab, button.ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--line);
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      font: inherit;
+    }
+    button.tab[aria-selected="true"] { border-color: var(--accent); color: var(--accent); }
+    main { padding: 0 1.4rem 2rem; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 0.9rem 1rem;
+      margin: 0.7rem 0;
+    }
+    .meta { color: var(--muted); font-size: 0.92rem; }
+    .reason { color: var(--bad); }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, monospace;
+      font-size: 0.85rem;
+      margin: 0.5rem 0 0;
+    }
+    .empty { color: var(--muted); padding: 1rem 0; }
+    a { color: var(--accent); }
+    form.login { max-width: 22rem; padding: 1.4rem; }
+    input[type="password"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0 1rem;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--line);
+      font: inherit;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ArzonTur — внутренний разбор</h1>
+    <p>Заявки, журнал Jev и спорные случаи. Не связано с medcoll.tech.</p>
+  </header>
+  <nav>
+    <button class="tab" data-tab="leads" aria-selected="true">Заявки</button>
+    <button class="tab" data-tab="decisions">Журнал решений</button>
+    <button class="tab" data-tab="disputes">Спорные</button>
+  </nav>
+  <main>
+    <section id="leads"></section>
+    <section id="decisions" hidden></section>
+    <section id="disputes" hidden></section>
+  </main>
+  <script>
+    const tabs = document.querySelectorAll(".tab");
+    const sections = {
+      leads: document.getElementById("leads"),
+      decisions: document.getElementById("decisions"),
+      disputes: document.getElementById("disputes"),
+    };
+    function show(name) {
+      for (const [key, el] of Object.entries(sections)) {
+        el.hidden = key !== name;
+      }
+      tabs.forEach((b) => b.setAttribute("aria-selected", b.dataset.tab === name ? "true" : "false"));
+    }
+    tabs.forEach((b) => b.addEventListener("click", () => show(b.dataset.tab)));
+
+    function esc(s) {
+      return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    }
+    function card(html) {
+      const d = document.createElement("div");
+      d.className = "card";
+      d.innerHTML = html;
+      return d;
+    }
+
+    async function load() {
+      const [leads, decisions, disputes] = await Promise.all([
+        fetch("/admin/api/leads", { credentials: "same-origin" }).then((r) => r.json()),
+        fetch("/admin/api/decisions", { credentials: "same-origin" }).then((r) => r.json()),
+        fetch("/admin/api/disputes", { credentials: "same-origin" }).then((r) => r.json()),
+      ]);
+      renderLeads(leads.items || []);
+      renderDecisions(decisions.items || []);
+      renderDisputes(disputes.items || []);
+    }
+
+    function renderLeads(items) {
+      const root = sections.leads;
+      root.innerHTML = "";
+      if (!items.length) {
+        root.innerHTML = '<p class="empty">Заявок пока нет.</p>';
+        return;
+      }
+      for (const row of items) {
+        const slots = row.slots || {};
+        root.appendChild(card(
+          `<div class="meta">${esc(row.ts)} · ${esc(row.chatId)} @${esc(row.username || "-")} · score ${esc(row.lead_score ?? "-")}</div>
+           <div>${esc(slots.city || slots.destination || "-")} · ${esc(slots.dates || "-")} · ${esc(slots.people || "-")} · ${esc(slots.budget || slots.budgetLevel || "-")}</div>
+           <pre>${esc(row.source_text || "")}</pre>`
+        ));
+      }
+    }
+
+    function renderDecisions(items) {
+      const root = sections.decisions;
+      root.innerHTML = "";
+      if (!items.length) {
+        root.innerHTML = '<p class="empty">Журнал пуст.</p>';
+        return;
+      }
+      for (const row of items) {
+        const d = row.decision || {};
+        const a = row.answers || {};
+        root.appendChild(card(
+          `<div class="meta">${esc(row.ts)} · chat ${esc(row.chatId || "-")} · ${esc(row.latencyMs || "-")} ms · ${esc(row.model || "")}</div>
+           <div>${esc(d.action)} / ${esc(d.path)} · ${esc(d.reason)}</div>
+           <div class="meta">intent ${esc(a.intent?.choice)} ${esc(a.intent?.confidence)} · to_human ${esc(a.to_human?.noul)} · dest ${esc(a.destination?.choice)}</div>
+           <pre>${esc(row.message || "")}</pre>`
+        ));
+      }
+    }
+
+    function renderDisputes(items) {
+      const root = sections.disputes;
+      root.innerHTML = "";
+      if (!items.length) {
+        root.innerHTML = '<p class="empty">Спорных случаев нет.</p>';
+        return;
+      }
+      for (const row of items) {
+        const wrap = card(
+          `<div class="meta">${esc(row.ts)} · ${esc(row.source)} · chat ${esc(row.chatId)} @${esc(row.username || "-")}</div>
+           <div class="reason">${esc(row.reason)}</div>
+           <pre>${esc(row.text || "")}</pre>
+           ${row.handled ? '<div class="meta">разобрано</div>' : `<button class="ghost" data-id="${esc(row.id)}">Отметить разобранным</button>`}`
+        );
+        root.appendChild(wrap);
+      }
+      root.querySelectorAll("button[data-id]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          await fetch("/admin/api/disputes/handled", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: btn.dataset.id }),
+          });
+          load();
+        });
+      });
+    }
+
+    load().catch(() => {
+      sections.leads.innerHTML = '<p class="empty">Не удалось загрузить. Проверьте вход.</p>';
+    });
+  </script>
+</body>
+</html>

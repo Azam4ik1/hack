@@ -6,14 +6,16 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const LOG_DIR = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "../../logs",
-);
+function logDir() {
+  if (process.env.TAAP_LOG_DIR) {
+    return path.resolve(process.env.TAAP_LOG_DIR);
+  }
+  return path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../logs");
+}
 
 export function logDecision(entry) {
-  fs.mkdirSync(LOG_DIR, { recursive: true });
-  const file = path.join(LOG_DIR, "decisions.jsonl");
+  fs.mkdirSync(logDir(), { recursive: true });
+  const file = path.join(logDir(), "decisions.jsonl");
   const record = {
     ts: new Date().toISOString(),
     ...entry,
@@ -23,5 +25,22 @@ export function logDecision(entry) {
 }
 
 export function logPath() {
-  return path.join(LOG_DIR, "decisions.jsonl");
+  return path.join(logDir(), "decisions.jsonl");
+}
+
+export function listDecisions(limit = 200) {
+  const file = logPath();
+  if (!fs.existsSync(file)) {
+    return [];
+  }
+  const lines = fs.readFileSync(file, "utf8").split(/\r?\n/).filter(Boolean);
+  const rows = [];
+  for (const line of lines.slice(-Math.max(1, limit))) {
+    try {
+      rows.push(JSON.parse(line));
+    } catch {
+      // skip a corrupt line
+    }
+  }
+  return rows.reverse();
 }

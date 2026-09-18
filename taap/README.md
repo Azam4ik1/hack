@@ -23,6 +23,8 @@ curl -s http://127.0.0.1:8081/health
 
 If `PUBLIC_BASE_URL` is an https origin, the process sets Telegram webhook to `$PUBLIC_BASE_URL/telegram/webhook`.
 
+Admin (leads, Jev log, disputed cases): `$PUBLIC_BASE_URL/admin`, cookie/Bearer `ADMIN_TOKEN`. Not on medcoll.tech.
+
 Eval:
 
 ```bash
@@ -57,4 +59,4 @@ curl -sk https://127.0.0.1:8443/health
 
 Postgres is local to `taap_net` (not published on the host). Daily dumps stay in `/home/taap/backups` for 14 days. Sessions/leads are still JSON files under `data/` until the store swap; `db/init.sql` is applied on first boot.
 
-`OPERATOR_CHAT_ID` may stay empty: operator messages go to the on-disk queue.
+`OPERATOR_CHAT_ID` is set when the owner writes the bot (or claims via `/start op_<OPERATOR_CLAIM_TOKEN>`). Admin panel: `https://srv1957432.hstgr.cloud:8443/admin` with `ADMIN_TOKEN` from `/home/taap/.env`.

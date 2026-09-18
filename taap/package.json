@@ -9,6 +9,6 @@
   "scripts": {
     "start": "node app/src/server.js",
     "eval": "node tools/eval.mjs",
-    "test": "node --test app/src/*.test.js"
+    "test": "node --test --test-concurrency=1 app/src/*.test.js"
   }
 }

@@ -7,6 +7,13 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import { handleTurn } from "./bot.js";
 import { env, loadEnv } from "./env.js";
+import { applyBotProfile } from "./profile.js";
+import { handleAdmin } from "./admin.js";
+import {
+  getOperatorChatId,
+  markOperatorWelcomeSent,
+  operatorWelcomeSent,
+} from "./store.js";
 import { getMe, getWebhookInfo, parseUpdate, sendMessage, setWebhook, answerCallback } from "./telegram.js";
 
 const PORT = Number(env("PORT", "8081"));
@@ -60,7 +67,7 @@ async function onWebhook(req, res) {
     }
     const result = await handleTurn({
       ...ctx,
-      operatorChatId: env("OPERATOR_CHAT_ID") || null,
+      operatorChatId: getOperatorChatId() || null,
     });
     for (const item of result.replies || []) {
       await sendMessage(ctx.chatId, item);
@@ -89,8 +96,16 @@ export function createServer() {
         service: "taap",
         telegram: Boolean(env("TELEGRAM_BOT_TOKEN")),
         typesafe: Boolean(env("TYPESAFE_API_KEY")),
+        operator: Boolean(getOperatorChatId()),
+        admin: Boolean(env("ADMIN_TOKEN")),
       });
       return;
+    }
+    if (url.pathname === "/admin" || url.pathname.startsWith("/admin/")) {
+      const handled = await handleAdmin(req, res, url, readBody);
+      if (handled) {
+        return;
+      }
     }
     if (req.method === "POST" && url.pathname === "/telegram/webhook") {
       await onWebhook(req, res);
@@ -106,6 +121,11 @@ export async function start() {
     throw new Error("TELEGRAM_BOT_TOKEN is not set");
   }
   const me = await getMe();
+  try {
+    await applyBotProfile();
+  } catch (err) {
+    console.error("bot profile failed", err.message || String(err));
+  }
   const server = createServer();
   await new Promise((resolve) => server.listen(PORT, "0.0.0.0", resolve));
   const publicBase = env("PUBLIC_BASE_URL").replace(/\/$/, "");
@@ -119,12 +139,24 @@ export async function start() {
     await setWebhook(webhookUrl, secret, certificatePem || undefined);
   }
   const info = publicBase ? await getWebhookInfo() : { url: "" };
+  const operatorChatId = getOperatorChatId();
+  if (operatorChatId && publicBase && !operatorWelcomeSent()) {
+    try {
+      await sendMessage(operatorChatId, {
+        text: `Этот чат назначен операторским для @${me.username || "ArzonTur_bot"}.\nСпорные диалоги придут сюда.\nРазбор заявок: ${publicBase}/admin\nТокен панели — ADMIN_TOKEN в /home/taap/.env, не в чат.`,
+      });
+      markOperatorWelcomeSent();
+    } catch (err) {
+      console.error("operator welcome failed", err.message || String(err));
+    }
+  }
   console.log(
     JSON.stringify({
       ok: true,
       bot: me.username || me.id,
       port: PORT,
       webhook: Boolean(info.url),
+      operator: Boolean(operatorChatId),
     }),
   );
   return { server, username: me.username, webhookUrl };

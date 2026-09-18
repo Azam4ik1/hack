@@ -16,6 +16,11 @@ test("hotel request is not an escape", () => {
   assert.equal(isOperatorEscape("Нужен отель в Дубае"), false);
 });
 
+test("/operator command is an escape", () => {
+  assert.equal(isOperatorEscape("/operator"), true);
+  assert.equal(isOperatorEscape("/operator@ArzonTur_bot"), true);
+});
+
 test("extract dubai hotel gold-like", () => {
   const got = extract(
     "Нужен отель в Дубае с 12 по 18 октября, 2 взрослых и ребёнок 6 лет, бюджет около 150$ за ночь",

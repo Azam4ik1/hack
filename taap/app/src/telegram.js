@@ -93,6 +93,34 @@ export async function getWebhookInfo() {
   return call("getWebhookInfo", {});
 }
 
+export async function getChat(chatId) {
+  return call("getChat", { chat_id: chatId });
+}
+
+export async function setMyDescription(description, languageCode) {
+  const payload = { description };
+  if (languageCode) {
+    payload.language_code = languageCode;
+  }
+  return call("setMyDescription", payload);
+}
+
+export async function setMyShortDescription(shortDescription, languageCode) {
+  const payload = { short_description: shortDescription };
+  if (languageCode) {
+    payload.language_code = languageCode;
+  }
+  return call("setMyShortDescription", payload);
+}
+
+export async function setMyCommands(commands, languageCode) {
+  const payload = { commands };
+  if (languageCode) {
+    payload.language_code = languageCode;
+  }
+  return call("setMyCommands", payload);
+}
+
 export function parseUpdate(update) {
   if (update.callback_query) {
     const q = update.callback_query;
