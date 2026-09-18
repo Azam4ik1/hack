@@ -45,7 +45,7 @@ export function decide(answers, extracted = {}) {
       return {
         action: "act",
         path: "visa",
-        reason: "visa_label_only",
+        reason: "visa_from_kb",
         thresholds: THRESHOLDS,
       };
     }

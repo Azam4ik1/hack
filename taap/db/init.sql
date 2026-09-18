@@ -47,7 +47,8 @@ CREATE TABLE IF NOT EXISTS operator_queue (
   handled BOOLEAN NOT NULL DEFAULT false
 );
 
--- Visa KB is stage 2 / skipped in this bot. Table reserved.
+-- Visa KB: Node still reads db/visa-rules.json; this table is the Postgres copy.
+-- Re-seed an existing volume with db/seed-visa.sql.
 CREATE TABLE IF NOT EXISTS visa_rules (
   id BIGSERIAL PRIMARY KEY,
   country TEXT NOT NULL,
@@ -64,4 +65,17 @@ CREATE TABLE IF NOT EXISTS visa_rules (
   valid_until DATE,
   notes_ru TEXT,
   notes_tg TEXT
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS visa_rules_country_citizenship_type
+  ON visa_rules (country, citizenship, visa_type);
+
+CREATE TABLE IF NOT EXISTS visa_gaps (
+  id BIGSERIAL PRIMARY KEY,
+  ts TIMESTAMPTZ NOT NULL DEFAULT now(),
+  country TEXT,
+  citizenship TEXT,
+  visa_type TEXT,
+  question TEXT,
+  chat_id TEXT
 );

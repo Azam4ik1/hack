@@ -44,7 +44,8 @@ services:
       POSTGRES_DB: taap
     volumes:
       - taap_pgdata:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./db/seed-visa.sql:/docker-entrypoint-initdb.d/02-seed-visa.sql:ro
     networks:
       - taap
     healthcheck:

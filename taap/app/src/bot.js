@@ -5,7 +5,7 @@
 import { decide } from "./decide.js";
 import { extract, isOperatorEscape, looksLikeSecret, mergeSlots, missingSlot, slotsComplete } from "./extract.js";
 import { env } from "./env.js";
-import { judgeMessage } from "./index.js";
+import { judgeMessage, visaMessage as defaultVisaMessage } from "./index.js";
 import { logDecision } from "./log.js";
 import {
   emptySlots,
@@ -17,11 +17,14 @@ import {
   saveLead,
   saveSession,
   setOperatorChatId,
+  logVisaGap,
 } from "./store.js";
+import { answerVisa, loadVisaKb, mapDestination } from "./visa.js";
 
 export const MENU_KEYBOARD = {
   inline_keyboard: [
     [{ text: "Подобрать жильё", callback_data: "menu:hotel" }],
+    [{ text: "Виза (справка)", callback_data: "menu:visa" }],
     [{ text: "Цены и условия", callback_data: "menu:prices" }],
     [{ text: "Оператор", callback_data: "menu:operator" }],
   ],
@@ -38,6 +41,19 @@ const DEST_KEYBOARD = {
       { text: "Другое", callback_data: "dest:other" },
     ],
     [{ text: "Оператор", callback_data: "menu:operator" }],
+  ],
+};
+
+const VISA_DEST_KEYBOARD = {
+  inline_keyboard: [
+    [
+      { text: "ОАЭ", callback_data: "visa-dest:uae" },
+      { text: "Турция", callback_data: "visa-dest:turkey" },
+    ],
+    [
+      { text: "Египет", callback_data: "visa-dest:egypt" },
+      { text: "Оператор", callback_data: "menu:operator" },
+    ],
   ],
 };
 
@@ -65,7 +81,7 @@ function withMenu(text) {
 
 function welcome() {
   return withMenu(
-    "Салом. Я ArzonTur — консультант по жилью за границей для поездок из Таджикистана.\n\nСейчас подбираем заявки в ОАЭ, Турцию и Египет. Бронирующую ссылку пока не даём: партнёрство TAAP ещё не одобрено. Паспорт и номер карты не нужны.\n\nНапишите, куда хотите поехать, или нажмите кнопку. В любой момент — «оператор».",
+    "Салом. Я ArzonTur — консультант по жилью за границей для поездок из Таджикистана.\n\nСейчас подбираем заявки в ОАЭ, Турцию и Египет. Бронирующую ссылку пока не даём: партнёрство TAAP ещё не одобрено. Паспорт и номер карты не нужны. Визовая справка — из проверенной базы, это не агентство и не консульство.\n\nНапишите, куда хотите поехать, или нажмите кнопку. В любой момент — «оператор».",
   );
 }
 
@@ -75,7 +91,7 @@ export function operatorCopy() {
 
 export function helpCopy() {
   return withMenu(
-    "ArzonTur собирает заявки на жильё за границей (ОАЭ, Турция, Египет). Ссылку Booking/TAAP пока не даём.\n\nКнопки меню или напишите город и даты. Жалобы и слово «оператор» сразу человеку.\n\nВизовая справка в боте ещё не подключена — это не агентство и не консульство.\n\nArzonTur дархости манзилро ҷамъ мекунад. «оператор» нависед — инсон ҷавоб медиҳад.",
+    "ArzonTur собирает заявки на жильё за границей (ОАЭ, Турция, Египет). Ссылку Booking/TAAP пока не даём.\n\nКнопки меню или напишите город и даты. Жалобы и слово «оператор» сразу человеку.\n\nВизовая справка берётся из базы с датой проверки — это не агентство и не консульство.\n\nArzonTur дархости манзилро ҷамъ мекунад. «оператор» нависед — инсон ҷавоб медиҳад.",
   );
 }
 
@@ -89,10 +105,79 @@ function pricesCopy() {
   );
 }
 
-function visaDeferred() {
-  return withMenu(
-    "Визовая справка в боте ещё не подключена — факты должны идти из проверенной базы, не из модели. Это не визовое агентство и не консульство.\n\nМогу подобрать жильё или передать оператору.",
-  );
+async function continueVisa(session, ctx, judged, deps = {}) {
+  session.mode = "visa";
+  const extracted = extract(ctx.text || "");
+  session.slots = mergeSlots(session.slots, extracted, judged?.answers || {});
+  saveSession(session);
+
+  let visaAnswers = judged?.visaAnswers || {};
+  const askVisa = deps.visaMessage || defaultVisaMessage;
+  if (ctx.text && !ctx.callbackData) {
+    try {
+      const vm = await askVisa(ctx.text);
+      visaAnswers = vm.answers || {};
+    } catch {
+      visaAnswers = {};
+    }
+  }
+
+  const destRaw =
+    session.slots.destination ||
+    judged?.answers?.destination?.choice ||
+    extracted.destination ||
+    null;
+  const country = mapDestination(destRaw);
+  if (!country && destRaw && destRaw !== "unnamed") {
+    logVisaGap({
+      country: destRaw,
+      citizenship: "TJ",
+      visaType: null,
+      question: ctx.text || null,
+      chatId: session.chatId,
+    });
+    const handed = await handoff(session, ctx, "visa_gap", judged);
+    const kb = loadVisaKb();
+    const useTg = ctx.text && /[қӯғҳҷӣҚӮҒҲҶӢ]/.test(ctx.text);
+    const unsupported = useTg
+      ? `Барои ин кишвар сабти санҷидашуда нест. Ба оператор медиҳам.\n\n${kb.disclaimer_tg}`
+      : `По этой стране проверенной записи нет. Передаю оператору.\n\n${kb.disclaimer_ru}`;
+    return {
+      replies: [withMenu(unsupported), ...handed.replies],
+      notify: handed.notify,
+      session: handed.session,
+    };
+  }
+  const result = answerVisa({
+    country,
+    text: ctx.text || "",
+    visaAnswers,
+  });
+
+  if (result.askCountry) {
+    return {
+      replies: [reply(result.text, { reply_markup: VISA_DEST_KEYBOARD })],
+      session,
+    };
+  }
+  if (result.gap) {
+    logVisaGap({
+      country: result.country || null,
+      citizenship: "TJ",
+      visaType: result.visaType || null,
+      question: ctx.text || null,
+      chatId: session.chatId,
+    });
+  }
+  if (result.handoff) {
+    const handed = await handoff(session, ctx, result.stale ? "visa_stale" : "visa_gap", judged);
+    return {
+      replies: [withMenu(result.text), ...handed.replies],
+      notify: handed.notify,
+      session: handed.session,
+    };
+  }
+  return { replies: [withMenu(result.text)], session };
 }
 
 function askMissing(slot) {
@@ -226,7 +311,7 @@ export async function handleTurn(ctx, deps = {}) {
   }
 
   if (ctx.callbackData) {
-    return handleCallback(session, ctx, judge);
+    return handleCallback(session, ctx, judge, deps);
   }
 
   if (session.handedOff && session.mode === "operator") {
@@ -249,6 +334,26 @@ export async function handleTurn(ctx, deps = {}) {
       notify,
       session,
     };
+  }
+
+  if (session.mode === "visa" && text) {
+    let judged = null;
+    try {
+      const extracted = extract(text);
+      judged = await judge(text, {
+        city: extracted.city || session.slots.city,
+        date: extracted.dates || session.slots.dates,
+      }, { chatId: session.chatId });
+      if (judged.decision.action === "operator") {
+        return handoff(session, ctx, judged.decision.reason, judged);
+      }
+      if (judged.decision.path === "hotel" || judged.decision.action === "collect_slots") {
+        return continueHotel(session, ctx, judged);
+      }
+    } catch {
+      judged = null;
+    }
+    return continueVisa(session, ctx, judged, deps);
   }
 
   if (session.mode === "hotel" && text) {
@@ -298,7 +403,7 @@ export async function handleTurn(ctx, deps = {}) {
     return { replies: [pricesCopy()], session };
   }
   if (judged.decision.path === "visa") {
-    return { replies: [visaDeferred()], session };
+    return continueVisa(session, ctx, judged, deps);
   }
   if (judged.decision.path === "greeting") {
     return { replies: [welcome()], session };
@@ -346,17 +451,29 @@ function normalizeIncoming(ctx) {
   return String(ctx.text || "").trim();
 }
 
-async function handleCallback(session, ctx, judge) {
+async function handleCallback(session, ctx, judge, deps = {}) {
   const data = ctx.callbackData;
   if (data === "menu:hotel") {
     session.mode = "hotel";
     saveSession(session);
     return continueHotel(session, { ...ctx, text: "" }, null);
   }
+  if (data === "menu:visa") {
+    session.mode = "visa";
+    saveSession(session);
+    return continueVisa(session, { ...ctx, text: "" }, null, deps);
+  }
   if (data === "menu:prices") {
     session.mode = "idle";
     saveSession(session);
     return { replies: [pricesCopy()], session };
+  }
+  if (data.startsWith("visa-dest:")) {
+    const dest = data.slice("visa-dest:".length);
+    session.slots.destination = dest;
+    session.mode = "visa";
+    saveSession(session);
+    return continueVisa(session, { ...ctx, text: "" }, null, deps);
   }
   if (data.startsWith("dest:")) {
     const dest = data.slice(5);

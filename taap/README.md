@@ -1,15 +1,16 @@
 # TAAP consultant bot
 
-Telegram bot + Jev decision layer for housing requests from Tajikistan. Visa path is not implemented. No Booking/TAAP links until partnership is approved. Jev does not touch Telegram, databases, or TAAP.
+Telegram bot + Jev decision layer for housing requests from Tajikistan. Visa answers come from `db/visa-rules.json` (Postgres copy in `db/seed-visa.sql`). Jev only classifies; it does not write visa text. No Booking/TAAP links until partnership is approved. Jev does not touch Telegram, databases, or TAAP.
 
 Bot: [@ArzonTur_bot](https://t.me/ArzonTur_bot)
 
 ## Question keys
 
 Routing: `intent`, `destination`, `to_human`, `lead_score`  
-Hotel: `slots_complete`, `budget_level`, `flexible_dates`
+Hotel: `slots_complete`, `budget_level`, `flexible_dates`  
+Visa labels (visa path only): `visa_topic`, `is_transit`, `asks_for_service`
 
-`intent=visa` is a routing label only. Complaints always go to a human. Exact «оператор» is handled in core before Jev.
+Complaints always go to a human. Exact «оператор» is handled in core before Jev. Expired visa rows still quote `checked_at` + `source_url` and page the operator. Unknown countries go to `visa_gaps`.
 
 ## Run locally
 
@@ -57,6 +58,10 @@ curl -sS http://127.0.0.1:8081/health
 curl -sk https://127.0.0.1:8443/health
 ```
 
-Postgres is local to `taap_net` (not published on the host). Daily dumps stay in `/home/taap/backups` for 14 days. Sessions/leads are still JSON files under `data/` until the store swap; `db/init.sql` is applied on first boot.
+Postgres is local to `taap_net` (not published on the host). Daily dumps stay in `/home/taap/backups` for 14 days. Sessions/leads are still JSON files under `data/` until the store swap; `db/init.sql` is applied on first boot. Visa answers are read from `db/visa-rules.json` inside the app image. On an existing Postgres volume re-apply the seed:
+
+```bash
+docker compose exec -T db psql -U taap -d taap < db/seed-visa.sql
+```
 
 `OPERATOR_CHAT_ID` is set when the owner writes the bot (or claims via `/start op_<OPERATOR_CLAIM_TOKEN>`). Admin panel: `https://srv1957432.hstgr.cloud:8443/admin` with `ADMIN_TOKEN` from `/home/taap/.env`.

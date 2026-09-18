@@ -38,14 +38,14 @@ test("high-confidence hotel acts", () => {
   assert.equal(d.path, "hotel");
 });
 
-test("high-confidence visa is label-only, no visa questions", () => {
+test("high-confidence visa routes to the knowledge base", () => {
   const d = decide({
     intent: { choice: "visa", confidence: 0.93 },
     to_human: { noul: 0.1 },
   });
   assert.equal(d.action, "act");
   assert.equal(d.path, "visa");
-  assert.equal(d.reason, "visa_label_only");
+  assert.equal(d.reason, "visa_from_kb");
 });
 
 test("mid hotel with city collects slots", () => {

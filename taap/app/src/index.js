@@ -6,7 +6,7 @@
 import { decide } from "./decide.js";
 import { systemOne, summarizeAnswers } from "./jev.js";
 import { logDecision } from "./log.js";
-import { ALL_QUESTIONS, HOTEL_QUESTIONS, ROUTING_QUESTIONS } from "./questions.js";
+import { ALL_QUESTIONS, HOTEL_QUESTIONS, ROUTING_QUESTIONS, VISA_QUESTIONS } from "./questions.js";
 
 export { decide, THRESHOLDS } from "./decide.js";
 export {
@@ -16,6 +16,8 @@ export {
   QUESTION_KEYS,
   ROUTING_KEYS,
   ROUTING_QUESTIONS,
+  VISA_KEYS,
+  VISA_QUESTIONS,
 } from "./questions.js";
 
 async function ask(message, questions) {
@@ -34,6 +36,11 @@ async function ask(message, questions) {
 /** Step 1 routing only. */
 export function routeMessage(message) {
   return ask(message, ROUTING_QUESTIONS);
+}
+
+/** Step 2 visa labels only. Text answers come from visa.js / the KB. */
+export function visaMessage(message) {
+  return ask(message, VISA_QUESTIONS);
 }
 
 /** Step 3 hotel questions only. */

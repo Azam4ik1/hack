@@ -1,10 +1,11 @@
 /**
  * Jev question sets for the TAAP consultant.
- * Visa path questions are intentionally omitted; `visa` is only an intent label.
+ * Visa answers are never generated here — only labels for a DB lookup.
  */
 
 export const ROUTING_KEYS = ["intent", "destination", "to_human", "lead_score"];
 export const HOTEL_KEYS = ["slots_complete", "budget_level", "flexible_dates"];
+export const VISA_KEYS = ["visa_topic", "is_transit", "asks_for_service"];
 export const QUESTION_KEYS = [...ROUTING_KEYS, ...HOTEL_KEYS];
 
 /** Step 1 — asked on every message. */
@@ -99,6 +100,43 @@ export const HOTEL_QUESTIONS = {
       yes: "The client clearly can move dates (plus/minus days, «примерно», «санаҳояшро тағйир»).",
       no: "Exact or fixed dates are given and flexibility is not offered.",
       unspecified: "Dates are absent, or flexibility is not stated.",
+    },
+  },
+};
+
+/** Visa path only — classifier, not the answer text. */
+export const VISA_QUESTIONS = {
+  visa_topic: {
+    type: "choice",
+    instructions:
+      "If `message` is about a visa or entry stamp, which subtopic is it? Russian or Tajik. Pick one.",
+    criteria: {
+      needed:
+        "Asks whether a visa is required at all, visa-free, or visa on arrival.",
+      documents: "Asks which documents, photos, insurance, or bookings are needed for a visa.",
+      timing: "Asks how long a visa takes, processing days, or when to apply.",
+      fee: "Asks the visa price, consular fee, or how to pay for a visa.",
+      transit: "Asks about airport transit, layover, or changing planes without entering the city.",
+      refusal: "Asks about a visa refusal, denial, or ban.",
+      extension: "Asks about extending a stay or a visa already issued.",
+      other: "Visa-related but none of the topics above, or not a visa question.",
+    },
+  },
+  is_transit: {
+    type: "noul",
+    instructions: "Is `message` specifically about airport transit / layover rather than a stay in the country?",
+    criteria: {
+      true: "The client only wants to change planes or remain airside.",
+      false: "They plan to enter the country, stay in a city, or the message is not about transit.",
+    },
+  },
+  asks_for_service: {
+    type: "noul",
+    instructions:
+      "Is the client asking this bot to apply for, buy, or file a visa on their behalf?",
+    criteria: {
+      true: "They want us to submit a visa application, get them a stamp, or act as a visa agency.",
+      false: "They only want information, a checklist, or a link to an official site.",
     },
   },
 };

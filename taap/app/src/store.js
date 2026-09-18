@@ -108,6 +108,16 @@ export function logDialog(entry) {
   appendJsonl("dialogs.jsonl", { ts: new Date().toISOString(), ...entry });
 }
 
+export function logVisaGap(entry) {
+  const row = {
+    ts: new Date().toISOString(),
+    citizenship: "TJ",
+    ...entry,
+  };
+  appendJsonl("visa-gaps.jsonl", row);
+  return row;
+}
+
 function readJsonl(name, limit = 200) {
   ensure();
   const file = path.join(dataDir(), name);
