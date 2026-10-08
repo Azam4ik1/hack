@@ -1,9 +1,16 @@
-# Закон 10 — задание для Claude в Chrome
+# Закон 10 — история Лолы Монтес — задание для Claude в Chrome
 
-**Закон 10: «Заражение: избегай несчастных и неудачников»** (Infection: Avoid the Unhappy and Unlucky).
-Суть: несчастье и вечное нытьё заразны. Кто рядом с таким человеком, тот тонет вместе с ним.
+**Закон 10: «Заражение: избегай несчастных и неудачников».**
+История из книги: **Лола Монтес** (1821–1861), танцовщица, которая погубила каждого, кто был с ней рядом.
 
-Визуальная идея: от мрачного человека расползается **чёрная тень, как чернила**. Герой в **белом костюме**: когда чернила касаются его, белое становится серым.
+Короткая история:
+- Ирландка Элиза Гилберт назвалась «испанской танцовщицей Лолой Монтес».
+- Париж, 1845: её любовник, богатый издатель газеты **Александр Дюжарье**, убит на дуэли.
+- Мюнхен, 1846: король Баварии **Людвиг I** без ума от неё, делает её графиней. Народ в ярости.
+- 1848: бунт на улицах, Людвиг **отрекается от трона**.
+- Конец: Лола умирает в Нью-Йорке в нищете и одиночестве.
+
+Ролик: 6 кадров × 5 секунд = 30 секунд. Стиль: исторический, кино, 1840-е, свечи.
 
 ---
 
@@ -13,31 +20,36 @@
 
 ### Шаг 1. Фото — higgsfield.ai → Image
 Модель: **Nano Banana 2**, режим **Unlimited** включён, формат **9:16**.
-Сначала сгенерируй кадр 1. Потом загрузи его как референс (image reference) для кадров 2–5, чтобы герой был тот же.
+Сначала сгенерируй кадр 1. Потом загрузи его как референс (image reference) для кадров 2, 4 и 6, чтобы Лола была той же.
 
-**Кадр 1 — крючок**
+**Кадр 1 — Лола на сцене (крючок)**
 ```
-A gloomy hunched man in a dark coat standing in a bright white minimalist hall, thick black ink-like smoke slowly spreading from his body across the white floor, people near him turning grey where the ink touches them, a confident man in a clean white suit standing at a distance watching, high contrast black and white with warm light, cinematic, photorealistic, ultra detailed, 9:16
-```
-
-**Кадр 2 — рукопожатие**
-```
-Close-up of the same man in the white suit from reference shaking hands with the gloomy man in the dark coat, black ink-like stain crawling from the gloomy man's hand onto the white sleeve, dramatic side light, shallow depth of field, cinematic, photorealistic, 9:16
+1840s Paris theater stage lit by candles, a beautiful young woman with black hair and striking blue eyes in a red and black Spanish flamenco dress dancing with fierce passion, men in dark tailcoats in the audience staring mesmerized, warm candlelight and deep shadows, historical, cinematic, photorealistic, ultra detailed, 9:16
 ```
 
-**Кадр 3 — заражение**
+**Кадр 2 — Париж, Дюжарье**
 ```
-The same man from reference sitting alone in a dim office, his white suit now stained grey and black, wilted plants, cracked window, cold grey light, papers scattered, tired face, cinematic, photorealistic, 9:16
-```
-
-**Кадр 4 — выбор**
-```
-The same man from reference in a clean white suit walking away from a dark smoky room toward a bright doorway full of warm golden sunlight, his back to the camera, black smoke behind him, light ahead, symmetrical composition, cinematic, photorealistic, 9:16
+The same woman from reference in an elegant 1840s Paris salon beside a handsome wealthy young man in a dark frock coat holding a newspaper, candlelight, rich velvet interior, she smiles while a shadow falls across his face, historical, cinematic, photorealistic, 9:16
 ```
 
-**Кадр 5 — финал**
+**Кадр 3 — дуэль**
 ```
-Close-up of the same man from reference in a spotless white suit standing in warm golden sunlight, calm confident gaze straight into the camera, blurred dark figure far behind him in shadow, shallow depth of field, cinematic, photorealistic, 9:16
+Misty cold dawn in a Paris forest in 1845, two men in dark coats facing each other with dueling pistols, smoke from a gunshot, one young man falling backward onto wet leaves, grey blue light, tragic mood, historical, cinematic, photorealistic, 9:16
+```
+
+**Кадр 4 — король Людвиг**
+```
+The same woman from reference in a luxurious 1840s Bavarian royal palace hall, an old king with grey hair in a royal uniform with medals kneeling and kissing her hand, gold and candlelight, courtiers watching with hate from the shadows, historical, cinematic, photorealistic, 9:16
+```
+
+**Кадр 5 — бунт**
+```
+Night street in Munich in 1848, an angry crowd with burning torches and raised fists in front of a palace, smoke and orange fire light, broken windows, chaos, historical, cinematic, photorealistic, 9:16
+```
+
+**Кадр 6 — финал**
+```
+The same woman from reference, now older, pale and tired, sitting alone in a poor cold small room in New York in 1861, one dying candle, an old faded red Spanish dress on a chair, empty eyes, dark gloomy mood, historical, cinematic, photorealistic, 9:16
 ```
 
 ### Шаг 2. Видео — higgsfield.ai → Video
@@ -46,43 +58,49 @@ Close-up of the same man from reference in a spotless white suit standing in war
 
 **Кадр 1**
 ```
-Black ink-like smoke slowly spreads from the gloomy man across the white floor, people it touches slowly turn grey and lower their heads. The man in the white suit takes one step back. Slow camera push in, dramatic, cinematic, smooth motion.
+The woman spins in a passionate flamenco dance, her dress swirls, candles flicker, the men in the audience lean forward hypnotized. Slow camera push in on her face as she looks straight into the camera. Cinematic, smooth motion.
 ```
 
 **Кадр 2**
 ```
-The two men hold the handshake, the black stain slowly crawls up the white sleeve like ink in water. Very slow camera push in on the hands, subtle light flicker, cinematic, realistic motion.
+The woman slowly turns to the man and smiles, he looks at her in love, the candle beside him flickers and goes out, his face sinks into shadow. Slow camera push in, cinematic, realistic motion.
 ```
 
 **Кадр 3**
 ```
-The man sits motionless and slowly drops his head into his hands, grey dust falls in the cold light, a wilted leaf drops from the plant. Slow camera dolly in, heavy depressing mood, realistic motion.
+A gunshot flash and smoke, the young man slowly falls backward onto the wet leaves, mist drifts across the forest. Slow motion, camera slowly pushes in, tragic cinematic mood.
 ```
 
 **Кадр 4**
 ```
-The man walks steadily toward the bright doorway, black smoke behind him slowly fades, golden light grows brighter and fills the frame. Camera follows behind him, smooth cinematic motion.
+The old king kisses the woman's hand, she looks down at him with a cold calm smile, the courtiers in the shadows whisper to each other. Slow camera dolly in, candlelight flickers, cinematic, realistic motion.
 ```
 
 **Кадр 5**
 ```
-The man slowly raises his chin and gives a faint calm smile, warm sunlight flickers on his face, the dark figure behind dissolves into shadow. Very slow camera push in, calm powerful mood.
+The angry crowd surges forward waving torches and shouting, sparks and smoke fly in the air, fire light flickers on the palace walls. Handheld camera moving slowly forward, intense cinematic motion.
 ```
 
-Скачай все 5 видео.
+**Кадр 6**
+```
+The woman sits motionless, the last candle slowly burns out and the room goes dark, a single tear runs down her cheek. Very slow camera push in, sad quiet cinematic mood.
+```
+
+Скачай все 6 видео.
 
 ### Шаг 3. Озвучка — elevenlabs.io → Text to Speech
-Язык: русский. Голос: мужской, спокойный, глубокий (тот же, что для Закона 6). Stability ~50%.
-Каждую фразу генерируй отдельно и скачай как отдельный файл (1.mp3 … 5.mp3):
+Язык: русский. Голос: мужской, спокойный, глубокий (как рассказчик). Stability ~50%.
+Каждую фразу генерируй отдельно и скачай как отдельный файл (1.mp3 … 6.mp3):
 
-1. Закон десятый. Избегай несчастных и неудачников.
-2. Несчастье заразно, как болезнь.
-3. Кто рядом с ними, тонет вместе с ними.
-4. Выбирай тех, кто несёт свет.
-5. Твоё окружение — это твоя судьба.
+1. Закон десятый. Есть люди, которые губят всех, кто рядом. Её звали Лола Монтес.
+2. В Париже её полюбил богатый издатель.
+3. Вскоре его убили на дуэли.
+4. Тогда она очаровала короля Баварии. Он сделал её графиней.
+5. Народ восстал. Король потерял трон.
+6. Несчастье заразно. Выбирай, кто рядом с тобой.
 
 ### Шаг 4. Отчёт
-Напиши, что скачано и куда, и какие кадры получились плохо (лицо другое, руки кривые, чернила выглядят как грязь).
+Напиши, что скачано и куда, и какие кадры получились плохо (лицо Лолы другое, руки кривые, толпа плывёт).
 
 ---
 
@@ -90,10 +108,11 @@ The man slowly raises his chin and gives a faint calm smile, warm sunlight flick
 
 | Кадр | Время | Звук/эффект |
 |---|---|---|
-| 1 Крючок | 0–5с | низкий гул + текст «ЗАКОН 10» |
-| 2 Рукопожатие | 5–10с | тихий «шорох» расползающихся чернил |
-| 3 Заражение | 10–15с | музыка глухая, почти тишина |
-| 4 Выбор | 15–20с | музыка светлеет и нарастает |
-| 5 Финал | 20–25с | тёплый аккорд, удар в конце |
+| 1 Сцена | 0–5с | гитара фламенко, стук каблуков + текст «ЗАКОН 10» |
+| 2 Париж | 5–10с | музыка тише, тиканье часов |
+| 3 Дуэль | 10–15с | тишина → выстрел → эхо |
+| 4 Король | 15–20с | торжественные струнные, тревожные |
+| 5 Бунт | 20–25с | крики толпы, треск огня |
+| 6 Финал | 25–30с | тишина, одна нота пианино, свеча гаснет |
 
-Цвет: кадры 1–3 холодные и серые, кадры 4–5 тёплые и золотые. Переход из тьмы в свет и есть смысл ролика.
+Цвет: кадры 1, 2, 4 тёплые (свечи, золото), кадры 3, 5, 6 холодные и тёмные. За каждым тёплым моментом с Лолой идёт беда.
