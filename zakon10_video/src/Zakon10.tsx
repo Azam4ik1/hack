@@ -2,6 +2,7 @@ import {
   AbsoluteFill,
   Audio,
   Easing,
+  Img,
   OffthreadVideo,
   Sequence,
   interpolate,
@@ -11,11 +12,11 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
-import {FADE, GUNSHOT, SCENES, Scene} from './scenes';
+import {END_AT, FADE, GUNSHOT, NAME_AT, SCENES, SKIP_CAPTIONS, Scene, TOTAL} from './scenes';
 import captions from './captions.json';
 
 export const FPS = 30;
-export const TOTAL_FRAMES = 945;
+export const TOTAL_FRAMES = TOTAL;
 
 const FONT = 'Inter, "Inter Display", sans-serif';
 const RED = '#d4252b';
@@ -36,6 +37,18 @@ const SceneClip: React.FC<{scene: Scene; length: number; fadeIn: boolean}> = ({s
 
   return (
     <AbsoluteFill style={{opacity, overflow: 'hidden', backgroundColor: 'black'}}>
+      {scene.still ? (
+        <Img
+          src={staticFile(scene.src)}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            filter: scene.grade,
+            transform: `translate(${x + sx}px, ${y + sy}px) scale(${zoom})`,
+          }}
+        />
+      ) : (
       <OffthreadVideo
         src={staticFile(scene.src)}
         trimBefore={scene.trimBefore}
@@ -50,6 +63,7 @@ const SceneClip: React.FC<{scene: Scene; length: number; fadeIn: boolean}> = ({s
           transform: `translate(${x + sx}px, ${y + sy}px) scale(${zoom})`,
         }}
       />
+      )}
     </AbsoluteFill>
   );
 };
@@ -86,7 +100,7 @@ const Title: React.FC = () => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const pop = spring({frame: f, fps, config: {damping: 14, mass: 0.8}});
-  const out = interpolate(f, [58, 76], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const out = interpolate(f, [130, 150], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const spacing = interpolate(f, [0, 70], [30, 8], {extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic)});
   const line = interpolate(f, [8, 34], [0, 520], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic)});
   const sub = interpolate(f, [14, 30], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
@@ -163,7 +177,7 @@ const Subtitles: React.FC = () => {
   const t = f / fps;
   const lines = captions as Line[];
   // Первая фраза («Закон десятый») уже на экране титром
-  const idx = lines.findIndex((l, i) => i > 0 && t >= l.start - 0.08 && t < (lines[i + 1]?.start ?? l.end + 1) - 0.08 && t < l.end + 0.6);
+  const idx = lines.findIndex((l, i) => i >= SKIP_CAPTIONS && t >= l.start - 0.08 && t < (lines[i + 1]?.start ?? l.end + 1) - 0.08 && t < l.end + 0.6);
   if (idx < 0) return null;
   const line = lines[idx];
   const local = f - Math.round((line.start - 0.08) * fps);
@@ -253,7 +267,7 @@ export const Zakon10: React.FC = () => {
           const from = i === 0 ? sc.from : sc.from - FADE;
           const length = sc.to - from;
           return (
-            <Sequence key={sc.src} from={from} durationInFrames={length} premountFor={30}>
+            <Sequence key={`${sc.src}-${sc.from}`} from={from} durationInFrames={length} premountFor={30}>
               <SceneClip scene={sc} length={length} fadeIn={i > 0} />
             </Sequence>
           );
@@ -265,30 +279,33 @@ export const Zakon10: React.FC = () => {
           <Flash />
         </Sequence>
 
-        {SCENES.filter((s) => s.label).map((sc) => (
-          <Sequence key={`l-${sc.src}`} from={sc.src.startsWith('1_') ? 84 : sc.from + 4} durationInFrames={sc.src.startsWith('1_') ? 100 : 80}>
-            <PlaceLabel text={sc.label!} length={sc.src.startsWith('1_') ? 100 : 80} />
-          </Sequence>
-        ))}
+        {SCENES.filter((sc) => sc.label).map((sc) => {
+          const len = Math.min(90, sc.to - sc.from - 4);
+          return (
+            <Sequence key={`l-${sc.from}`} from={sc.from + 4} durationInFrames={len}>
+              <PlaceLabel text={sc.label!} length={len} />
+            </Sequence>
+          );
+        })}
 
-        <Sequence durationInFrames={78}>
+        <Sequence durationInFrames={152}>
           <Title />
         </Sequence>
 
-        <Sequence from={190} durationInFrames={72}>
+        <Sequence from={NAME_AT - 4} durationInFrames={72}>
           <NameCard />
         </Sequence>
 
         <Subtitles />
 
-        <Sequence from={875}>
+        <Sequence from={END_AT}>
           <EndCard />
         </Sequence>
       </AbsoluteFill>
 
       {/* Звук */}
       <Audio src={staticFile('voice.mp3')} volume={1} />
-      <Audio src={staticFile('drone.mp3')} volume={(fr) => interpolate(fr, [0, 30, 900, 945], [0, 0.3, 0.3, 0], {extrapolateRight: 'clamp'})} />
+      <Audio src={staticFile('drone.mp3')} volume={(fr) => interpolate(fr, [0, 30, TOTAL - 60, TOTAL], [0, 0.3, 0.3, 0], {extrapolateRight: 'clamp'})} />
       {/* Гитара фламенко из первого клипа на нормальной скорости */}
       <Sequence durationInFrames={150}>
         <Audio src={staticFile('1_dance.mp4')} volume={(fr) => interpolate(fr, [0, 6, 110, 150], [0, 0.4, 0.4, 0], {extrapolateRight: 'clamp'})} />
