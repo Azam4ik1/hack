@@ -1,135 +1,141 @@
-# Закон 11 — Бисмарк — промты и озвучка
+# Закон 11 — как в книге — промты и озвучка
 
 **Закон 11: «Сделай так, чтобы люди зависели от тебя»** (Learn to Keep People Dependent on You).
-История: **Отто фон Бисмарк** и король Пруссии **Вильгельм I** (1862–1890).
+Структура как в книге: **Нарушение закона** (кондотьер и Сиена) → **Соблюдение закона** (Людовик XI и астролог) → **Вывод**.
 
 ## Озвучка (ElevenLabs, Eleven v3, голос Sergey, одним куском)
 
 ```
 [calm, mysterious] Закон одиннадцатый. Сделай так, чтобы люди зависели от тебя.
 
-[pause] Пока ты нужен — ты в безопасности. Чем больше от тебя зависят, тем больше у тебя власти. Стань тем, без кого нельзя обойтись.
+[pause] Чтобы сохранить власть, ты должен быть нужен. Чем больше от тебя зависят, тем ты сильнее. А если ты больше не нужен — тебя уберут.
 
-[pause] Вот как это сделал один человек.
+[pause] Нарушение закона.
 
-[serious] Тысяча восемьсот шестьдесят второй год. Король Пруссии Вильгельм Первый в отчаянии. Парламент против него, и он уже написал отречение от трона.
+[serious] Средневековая Италия. Город Сиена в опасности. Горожане нанимают кондотьера — наёмного полководца. Он разбивает врагов и спасает город.
 
-[intrigued] И тогда он позвал Отто фон Бисмарка.
+[intrigued] Совет города собирается и думает: как его наградить? Золото — мало. Сделать правителем города — тоже мало.
 
-[confident] Бисмарк не стал служить сильным. Он выбрал слабого короля — потому что слабому он был нужен.
+[slow] И тогда один из них сказал: «Давайте убьём его. А потом будем почитать как святого покровителя».
 
-[dramatic] Он сказал парламенту: великие вопросы решаются не речами, а железом и кровью. И выиграл три войны.
+[pause] [heavy] Так они и сделали. Полководец сделал свою работу — и стал не нужен.
 
-[slow] Каждый раз, когда король сомневался, Бисмарк клал на стол прошение об отставке. И король уступал. Потому что без Бисмарка он был никем.
+[pause] Соблюдение закона.
 
-[powerful] В тысяча восемьсот семьдесят первом году, в Зеркальном зале Версаля, Вильгельм стал императором Германии. Но все знали, кто на самом деле правит.
+[mysterious] Франция, пятнадцатый век. Король Людовик Одиннадцатый, мрачный и подозрительный. Его астролог предсказал смерть придворной дамы — и через восемь дней она умерла.
 
-[pause] Сам император признавался: «Нелегко быть кайзером при таком канцлере».
+[tense] Король испугался. Он решил выбросить астролога из окна. Позвал его и спросил: «Ты знаешь будущее? Скажи, сколько проживёшь ты сам?»
 
-[heavy] Но в тысяча восемьсот девяностом году на трон взошёл молодой Вильгельм Второй. Он не нуждался в Бисмарке — и выгнал его.
+[calm, slow] Астролог ответил: «Я умру ровно за три дня до Вашего Величества».
 
-[long pause] [quiet] Пока ты нужен — ты силён. Как только ты не нужен — тебя выбросят.
+[pause] [intrigued] Король не тронул его. Он берёг его до конца жизни, осыпал подарками и окружил лучшими врачами. И астролог пережил короля.
 
-[calm, powerful] Сделай себя незаменимым.
+[long pause] [calm, powerful] Будь тем, без кого нельзя обойтись. Пока ты нужен — тебя не тронут.
 ```
 
 ## Кадры
 
-Фото: Nano Banana 2, Unlimited, 9:16. Сначала кадр 1 (портрет Бисмарка) — потом он референс для кадров с Бисмарком.
+Фото: Nano Banana 2, Unlimited, 9:16. Сначала кадр 1 (кондотьер) и кадр 6 (Людовик XI) — потом они референсы для своих сцен.
 Видео: Kling 3.0, 5s, 720p, Unlimited, звук выкл. Фото кадра → Start frame.
 
-### 1. Портрет Бисмарка (крючок)
+### НАРУШЕНИЕ: кондотьер и Сиена
+
+**1. Полководец у ворот Сиены (крючок)**
 Фото:
 ```
-Portrait of a powerful Prussian statesman in 1870s, tall, bald head, thick grey walrus mustache, bushy eyebrows, piercing cold eyes, dark Prussian military uniform with high collar and iron cross, standing in a dark palace hall behind an empty golden throne, his hand resting on the throne, candlelight and deep shadows, historical, cinematic, photorealistic, ultra detailed, 9:16
+A medieval Italian mercenary commander in 1300s, strong scarred face, short dark beard, steel plate armor with a red cloak, sitting on a black warhorse in front of the stone gates of the medieval city of Siena, crowds of townspeople cheering, banners, golden hour light, historical, cinematic, photorealistic, ultra detailed, 9:16
 ```
 Видео:
 ```
-The statesman slowly lifts his gaze to the camera with a cold calm look, his fingers tighten on the throne, candle flames flicker. Very slow camera push in, dramatic, cinematic, realistic motion.
+The commander rides slowly through the city gates, the crowd cheers and throws flowers, banners wave in the wind. Slow camera tracking backward in front of him, epic cinematic motion.
 ```
 
-### 2. Ключ (смысл закона)
+**2. Победа**
 Фото:
 ```
-A single glowing golden key held in a strong man's hand in a dark room, many other hands reaching toward it from the darkness, dramatic spotlight on the key, symbolic, cinematic, photorealistic, 9:16
+The same commander from reference standing on a hill after battle, raising his sword, the black and white banner of Siena waving behind him, enemy army fleeing in the valley below, smoke and dust, dramatic sunset, historical, cinematic, photorealistic, 9:16
 ```
 Видео:
 ```
-The hand slowly closes around the golden key, the reaching hands stretch closer but cannot touch it, light glows between the fingers. Slow camera push in, cinematic, smooth motion.
+The commander raises his sword high, the banner flaps in the wind, smoke drifts across the valley as the enemy flees. Slow camera push in from low angle, epic cinematic motion.
 ```
 
-### 3. Король в отчаянии, 1862
+**3. Совет города**
 Фото:
 ```
-An old Prussian king in 1862 with bald head, white side whiskers and white mustache, in a dark blue military uniform, sitting alone at a desk in a dim study, holding a letter of abdication, quill and ink, one candle, tired desperate face, historical, cinematic, photorealistic, 9:16
+Medieval Siena city council in a dark stone hall, old noblemen in rich robes sitting around a long table with a chest of gold coins, arguing, candlelight, suspicious faces, historical, cinematic, photorealistic, 9:16
 ```
 Видео:
 ```
-The old king stares at the letter, his hand trembles, he slowly lowers his head. The candle flickers. Slow camera dolly in, heavy quiet mood, realistic motion.
+The old noblemen argue and look at each other, one slowly closes the chest of gold, another leans forward and whispers. Slow camera dolly along the table, tense cinematic mood.
 ```
 
-### 4. Бисмарк входит
+**4. Предательство**
 Фото:
 ```
-The same statesman from reference entering a dark royal study through tall double doors, backlit silhouette, long shadow falling across the floor toward an old king at a desk, historical, cinematic, photorealistic, 9:16
+The same commander from reference walking alone down a dark narrow stone corridor at night, behind him on the wall the shadows of several men with raised daggers, one torch, suspense, historical, cinematic, photorealistic, 9:16
 ```
 Видео:
 ```
-The doors open, the statesman steps into the room, his long shadow stretches across the floor, the old king slowly raises his head. Slow camera push in, dramatic cinematic motion.
+The commander walks forward unaware, the shadows with daggers on the wall grow closer, the torch flickers and goes out. Slow camera following behind, suspense, cinematic motion.
 ```
 
-### 5. «Железом и кровью» — парламент
+**5. «Святой покровитель»**
 Фото:
 ```
-The same statesman from reference speaking from a podium in a crowded 1860s Prussian parliament hall, fist on the podium, angry deputies in black frock coats shouting, dramatic light from high windows, historical, cinematic, photorealistic, 9:16
+A marble statue of the same commander from reference as a saint with a halo in a medieval Italian church, townspeople kneeling and praying before it with candles, golden light from stained glass windows, ironic mood, historical, cinematic, photorealistic, 9:16
 ```
 Видео:
 ```
-The statesman strikes the podium with his fist and speaks with fierce confidence, deputies jump up and shout, dust floats in the light. Slow camera push in from low angle, intense cinematic motion.
+People pray before the statue, candle flames flicker, light slowly moves across the marble face. Slow camera crane upward toward the statue's face, quiet cinematic motion.
 ```
 
-### 6. Прошение об отставке
+### СОБЛЮДЕНИЕ: Людовик XI и астролог
+
+**6. Король Людовик XI**
 Фото:
 ```
-Close-up of the same statesman from reference placing a sealed letter of resignation on a royal desk in front of the old king with white whiskers, the king looking at the letter in panic, candlelight, historical, cinematic, photorealistic, 9:16
+King Louis XI of France in 1470s, thin gloomy suspicious face, long nose, dark fur-trimmed robe and a simple dark hat, sitting on a throne in a cold dark stone castle hall, narrow eyes, candlelight, historical, cinematic, photorealistic, ultra detailed, 9:16
 ```
 Видео:
 ```
-The statesman slowly slides the letter across the desk, the old king freezes, then pushes the letter back with a shaking hand. Slow camera push in, tense cinematic mood.
+The king slowly narrows his eyes and taps his fingers on the throne, candle flames flicker, shadows move on the stone walls. Very slow camera push in, dark tense mood, realistic motion.
 ```
 
-### 7. Зеркальный зал Версаля, 1871
+**7. Ловушка: открытое окно**
 Фото:
 ```
-1871 proclamation of the German Empire in the Hall of Mirrors at Versailles, officers raising swords and cheering, the old king on a platform being proclaimed emperor, the same statesman from reference in a white uniform standing in the center below, golden chandeliers, historical painting style composition, cinematic, photorealistic, 9:16
+The same king from reference in a dark castle room, an old astrologer with a long grey beard in a dark robe holding star charts standing before him, two guards waiting beside a tall open window high above the ground, night sky, tension, historical, cinematic, photorealistic, 9:16
 ```
 Видео:
 ```
-Officers raise their swords and cheer, the old king raises his hand on the platform, the statesman in white stands calm in the center, chandeliers glitter. Slow crane camera moving down, epic cinematic motion.
+The king leans forward and asks a question, the guards slowly step closer to the astrologer, wind blows through the open window and moves the curtains. Slow camera push in, tense cinematic mood.
 ```
 
-### 8. Молодой кайзер выгоняет Бисмарка, 1890
+**8. Ответ астролога**
 Фото:
 ```
-A young arrogant German emperor in 1890 with upturned mustache and spiked helmet, standing proudly in a palace hall, pointing to the door, the same statesman from reference, now very old and grey, standing in front of him with his head lowered, historical, cinematic, photorealistic, 9:16
+Close-up of the old astrologer from reference with a long grey beard, calm wise eyes, a slight knowing smile, candlelight on his face, star charts behind him, historical, cinematic, photorealistic, 9:16
 ```
 Видео:
 ```
-The young emperor points to the door with a cold face, the old statesman slowly bows, turns and walks away. Slow camera pull back, cold cinematic mood.
+The astrologer calmly looks at the king and speaks slowly with a slight smile, the candle flame steadies. Very slow camera push in on his face, calm powerful mood.
 ```
 
-### 9. Финал — «Лоцман сходит с корабля»
+**9. Король бережёт астролога**
 Фото:
 ```
-An old man in a long coat and captain's cap slowly climbing down the ladder of a huge dark ship at sea, a young emperor with upturned mustache watching from the deck above, grey stormy sky, symbolic, cinematic, photorealistic, 9:16
+The same old astrologer from reference sitting in a luxurious chair in rich velvet robes, a royal doctor checking his pulse, servants bringing food and gifts, the gloomy king from reference watching him nervously from the doorway, historical, cinematic, photorealistic, 9:16
 ```
 Видео:
 ```
-The old man slowly climbs down the ladder into a small boat, the young emperor turns away on the deck, waves hit the ship. Slow camera pull back, sad cinematic mood.
+The doctor checks the astrologer's pulse, servants place gifts around him, the king watches anxiously from the doorway, the astrologer quietly smiles. Slow camera pull back, ironic cinematic mood.
 ```
 
 ## Звук
-- Музыка: тёмный марш, военные барабаны, струнные (`dark orchestral march`, `epic war drums cinematic`).
-- Кадр 5: шум толпы в парламенте, удар кулаком.
-- Кадр 7: ликование и звон шпаг.
-- Кадр 9: волны, крик чаек, тишина в конце.
+- Музыка: средневековая, тёмная (`dark medieval cinematic`, `gregorian choir dark`).
+- Кадр 1–2: ликование толпы, топот коня, звон мечей.
+- Кадр 4: шаги в коридоре, факел гаснет — тишина.
+- Кадр 5: церковный хор.
+- Кадр 7: ветер из окна.
+- Кадр 8: тишина перед ответом астролога — главный момент.
