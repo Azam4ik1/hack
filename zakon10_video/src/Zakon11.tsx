@@ -104,7 +104,7 @@ const ShotView: React.FC<{shot: Shot; length: number; fadeIn: boolean}> = ({shot
   );
 };
 
-const FilmLook: React.FC = () => {
+export const FilmLook: React.FC = () => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{pointerEvents: 'none'}}>
@@ -124,7 +124,7 @@ const FilmLook: React.FC = () => {
 type Word = {text: string; start: number; end: number};
 type Line = {start: number; end: number; words: Word[]};
 
-const Subtitles: React.FC = () => {
+export const Subtitles: React.FC = () => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const t = f / fps;
@@ -177,7 +177,7 @@ const Subtitles: React.FC = () => {
   );
 };
 
-const NameCard: React.FC = () => {
+export const NameCard: React.FC = () => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const a = spring({frame: f, fps, config: {damping: 20}});
@@ -192,7 +192,7 @@ const NameCard: React.FC = () => {
   );
 };
 
-const EndCard: React.FC = () => {
+export const EndCard: React.FC = () => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const dark = interpolate(f, [0, 18], [0, 0.7], {extrapolateRight: 'clamp'});
