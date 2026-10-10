@@ -11,7 +11,9 @@ type Photo = {at: number; src: string; focus: [number, number]; zoom: [number, n
 
 // Фото сверху: врезки на лица и детали в такт истории
 const PHOTOS: Photo[] = [
-  {at: 0, src: 'ph7.jpg', focus: [82, 16], zoom: [1.6, 1.75]}, // Чикаго за окном
+  {at: 0, src: 'ph_chicago.jpg', focus: [50, 30], zoom: [1.0, 1.1]}, // Чикаго ночью
+  {at: 3.83, src: 'ph_chicago.jpg', focus: [14, 62], zoom: [1.35, 1.5]}, // гангстеры с автоматами
+  {at: 6.64, src: 'ph_chicago.jpg', focus: [96, 24], zoom: [1.2, 1.32]}, // неон CHICAGO
   {at: T.office, src: 'ph7.jpg', focus: [72, 30], zoom: [1.7, 1.9]}, // Капоне
   {at: T.threat, src: 'ph6.jpg', focus: [55, 14], zoom: [1.25, 1.4]}, // сигара и охранник
   {at: T.door, src: 'ph5.jpg', focus: [45, 20], zoom: [1.5, 1.65]}, // Люстиг
