@@ -27,7 +27,7 @@ const W = 1080;
 const H = 1920;
 
 // ---------- Таймлайн по озвучке (сек) ----------
-const T = {
+export const T = {
   chicago: 0,
   office: 8.82,
   threat: 13.74,
@@ -44,7 +44,7 @@ const T = {
   end: 63.84,
 };
 
-const SLAMS: {text: string; at: number; color?: string; top?: number}[] = [
+export const SLAMS: {text: string; at: number; color?: string; top?: number}[] = [
   {text: 'ЧЕСТНЫМ', at: 5.26, color: GOLD},
   {text: 'АЛЬ КАПОНЕ', at: 9.6, color: GOLD},
   {text: 'ЖЕСТОКО', at: 15.55, color: RED},
@@ -366,25 +366,25 @@ const WalkAway: React.FC = () => {
 };
 
 // ---------- Тексты ----------
-const Slam: React.FC<{text: string; color?: string}> = ({text, color}) => {
+export const Slam: React.FC<{text: string; color?: string; top?: number}> = ({text, color, top = 330}) => {
   const f = useCurrentFrame();
   const scale = interpolate(f, [0, 5], [1.9, 1], {extrapolateRight: 'clamp', easing: Easing.out(Easing.back(1.6))});
   const o = interpolate(f, [0, 3, 26, 34], [0, 1, 1, 0], {extrapolateRight: 'clamp'});
   const size = text.length > 9 ? 108 : text.length > 6 ? 140 : 180;
   return (
-    <AbsoluteFill style={{alignItems: 'center', top: 330}}>
+    <AbsoluteFill style={{alignItems: 'center', top}}>
       <div style={{fontFamily: FONT, fontWeight: 900, fontSize: size, letterSpacing: 4, color: color ?? 'white', opacity: o, transform: `scale(${scale})`, whiteSpace: 'nowrap', textShadow: '0 10px 40px rgba(0,0,0,0.95)', WebkitTextStroke: '3px rgba(0,0,0,0.55)'}}>{text}</div>
     </AbsoluteFill>
   );
 };
 
-const Hook: React.FC = () => {
+export const Hook: React.FC<{top?: number}> = ({top = 300}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const a = spring({frame: f - 3, fps, config: {damping: 16}});
   const out = interpolate(f, [s(3.3), s(3.7)], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
-    <AbsoluteFill style={{alignItems: 'center', top: 300, opacity: a * out}}>
+    <AbsoluteFill style={{alignItems: 'center', top, opacity: a * out}}>
       <div style={{fontFamily: FONT, fontWeight: 800, fontSize: 70, color: 'white', textAlign: 'center', lineHeight: 1.18, maxWidth: 940, transform: `translateY(${(1 - a) * -30}px)`, textShadow: '0 4px 24px rgba(0,0,0,0.95)'}}>
         Как обмануть
         <br />
@@ -396,12 +396,12 @@ const Hook: React.FC = () => {
   );
 };
 
-const Place: React.FC<{text: string}> = ({text}) => {
+export const Place: React.FC<{text: string; top?: number}> = ({text, top = 170}) => {
   const f = useCurrentFrame();
   const shown = Math.floor(interpolate(f, [4, 4 + text.length * 2], [0, text.length], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}));
   const o = interpolate(f, [40, 52], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
-    <div style={{position: 'absolute', top: 170, left: 80, display: 'flex', alignItems: 'center', gap: 20, opacity: o}}>
+    <div style={{position: 'absolute', top, left: 80, display: 'flex', alignItems: 'center', gap: 20, opacity: o}}>
       <div style={{width: 56, height: 3, background: RED}} />
       <div style={{fontFamily: FONT, fontWeight: 700, fontSize: 40, letterSpacing: 8, color: 'white', textShadow: '0 2px 12px rgba(0,0,0,0.9)'}}>{text.slice(0, shown)}</div>
     </div>
@@ -411,7 +411,7 @@ const Place: React.FC<{text: string}> = ({text}) => {
 type Word = {text: string; start: number; end: number};
 type Line = {start: number; end: number; words: Word[]};
 
-const Subs: React.FC = () => {
+export const Subs: React.FC<{top?: number}> = ({top = 1480}) => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
   const t = f / fps;
@@ -422,7 +422,7 @@ const Subs: React.FC = () => {
   const line = lines[idx];
   const enter = spring({frame: f - Math.round((line.start - 0.05) * fps), fps, config: {damping: 18, stiffness: 200}});
   return (
-    <AbsoluteFill style={{alignItems: 'center', top: 1480}}>
+    <AbsoluteFill style={{alignItems: 'center', top}}>
       <div style={{width: 960, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '4px 24px', transform: `translateY(${(1 - enter) * 22}px)`, opacity: enter}}>
         {line.words.map((w, i) => {
           const active = t >= w.start && t < w.end + 0.05;
@@ -474,7 +474,7 @@ const Flash: React.FC = () => {
   return <AbsoluteFill style={{backgroundColor: '#fff3dc', opacity: interpolate(f, [0, 2, 8], [0, 0.6, 0], {extrapolateRight: 'clamp'})}} />;
 };
 
-const Progress: React.FC = () => {
+export const Progress: React.FC = () => {
   const f = useCurrentFrame();
   return <div style={{position: 'absolute', top: 0, left: 0, height: 8, width: `${(f / NOIR12_FULL_TOTAL) * 100}%`, background: GOLD, boxShadow: `0 0 12px ${GOLD}`}} />;
 };
@@ -497,13 +497,13 @@ const SCENES: {at: number; el: React.ReactNode}[] = [
   {at: T.end, el: <EndScene />},
 ];
 
-const PLACES: {text: string; at: number}[] = [
+export const PLACES: {text: string; at: number}[] = [
   {text: 'ЧИКАГО, 1926', at: 6.7},
   {text: 'ПАРИЖ, 1925', at: 19.9},
   {text: 'БАНК', at: 33.4},
 ];
 
-export const Noir12Full: React.FC = () => {
+export const Noir12Full: React.FC<{mode?: 'full' | 'visual' | 'audio'}> = ({mode = 'full'}) => {
   const f = useCurrentFrame();
   let dx = 0;
   let dy = 0;
@@ -517,10 +517,10 @@ export const Noir12Full: React.FC = () => {
   }
   const fadeOut = interpolate(f, [NOIR12_FULL_TOTAL - 15, NOIR12_FULL_TOTAL], [1, 0], {extrapolateLeft: 'clamp'});
   return (
-    <AbsoluteFill style={{backgroundColor: 'black'}}>
-      <AbsoluteFill style={{opacity: fadeOut}}>
+    <AbsoluteFill style={{backgroundColor: mode === 'audio' ? 'transparent' : 'black'}}>
+      <AbsoluteFill style={{opacity: mode === 'audio' ? 0 : fadeOut}}>
         <AbsoluteFill style={{transform: `translate(${dx}px, ${dy}px)`}}>
-          {SCENES.map((sc, i) => {
+          {mode !== 'audio' && SCENES.map((sc, i) => {
             const from = s(sc.at);
             const to = i + 1 < SCENES.length ? s(SCENES[i + 1].at) : NOIR12_FULL_TOTAL;
             return (
@@ -536,6 +536,8 @@ export const Noir12Full: React.FC = () => {
             <Flash />
           </Sequence>
         ))}
+        {mode === 'full' && (
+          <>
         <Sequence durationInFrames={s(3.8)}>
           <Hook />
         </Sequence>
@@ -551,8 +553,12 @@ export const Noir12Full: React.FC = () => {
         ))}
         <Subs />
         <Progress />
+          </>
+        )}
       </AbsoluteFill>
 
+      {mode !== 'visual' && (
+        <>
       {/* Звук */}
       <Audio src={staticFile('z12/voice.mp3')} volume={1} />
       <Audio src={staticFile('drone.mp3')} volume={0.15} />
@@ -593,6 +599,8 @@ export const Noir12Full: React.FC = () => {
       <Sequence from={s(T.end)} durationInFrames={45}>
         <Audio src={staticFile('z11/boom.wav')} volume={0.8} />
       </Sequence>
+        </>
+      )}
     </AbsoluteFill>
   );
 };
