@@ -25,37 +25,41 @@ const GOLD = '#E8B04B';
 const RED = '#d4252b';
 const END_AT = 63.17; // «Закон тринадцатый»
 
-type Shot = {at: number; src: string; zoom: [number, number]; origin?: string; cut?: 'whoosh' | 'punch' | 'flash'};
+// focus — точка на фото (в %), которую ставим в центр кадра; zoom — крупность
+type Shot = {at: number; src: string; zoom: [number, number]; focus: [number, number]; cut?: 'whoosh' | 'punch' | 'flash'};
 
 // p1 Каструччо на троне, p2 коронация, p3 мятеж, p4 Стефано на коленях, p5 холодное лицо и стража,
 // p6 горящее знамя, p7 Афины, p8 посол Коринфа, p9 посол Коркиры, p10 флот
 const SHOTS: Shot[] = [
-  {at: 0, src: 'p4.jpg', zoom: [1.7, 1.85], origin: '38% 52%'},
-  {at: 1.75, src: 'p5.jpg', zoom: [1.35, 1.45], origin: '50% 30%', cut: 'punch'},
-  {at: 3.28, src: 'p1.jpg', zoom: [1.0, 1.06], origin: '50% 30%', cut: 'whoosh'},
-  {at: 5.46, src: 'p1.jpg', zoom: [1.8, 1.95], origin: '50% 25%', cut: 'punch'},
-  {at: 7.33, src: 'p2.jpg', zoom: [1.0, 1.07], origin: '50% 40%', cut: 'whoosh'},
-  {at: 9.41, src: 'p2.jpg', zoom: [1.7, 1.85], origin: '68% 8%', cut: 'punch'},
-  {at: 10.79, src: 'p1.jpg', zoom: [1.1, 1.2], origin: '50% 28%', cut: 'whoosh'},
-  {at: 13.2, src: 'p2.jpg', zoom: [1.9, 2.05], origin: '90% 50%', cut: 'punch'},
-  {at: 15.66, src: 'p3.jpg', zoom: [1.0, 1.08], origin: '50% 55%', cut: 'whoosh'},
-  {at: 17.6, src: 'p3.jpg', zoom: [1.7, 1.85], origin: '42% 54%', cut: 'punch'},
-  {at: 19.53, src: 'p4.jpg', zoom: [1.0, 1.06], origin: '50% 40%', cut: 'whoosh'},
-  {at: 22.39, src: 'p4.jpg', zoom: [1.9, 2.05], origin: '20% 40%', cut: 'punch'},
-  {at: 26.72, src: 'p4.jpg', zoom: [1.9, 2.05], origin: '68% 20%', cut: 'punch'},
-  {at: 30.25, src: 'p5.jpg', zoom: [1.0, 1.1], origin: '50% 35%', cut: 'flash'},
-  {at: 33.92, src: 'p6.jpg', zoom: [1.0, 1.1], origin: '60% 70%', cut: 'whoosh'},
-  {at: 38.12, src: 'p7.jpg', zoom: [1.0, 1.06], origin: '50% 30%', cut: 'whoosh'},
-  {at: 41.6, src: 'p7.jpg', zoom: [1.5, 1.6], origin: '50% 85%', cut: 'punch'},
-  {at: 45.25, src: 'p7.jpg', zoom: [1.8, 1.95], origin: '62% 8%', cut: 'punch'},
-  {at: 48.04, src: 'p8.jpg', zoom: [1.0, 1.07], origin: '30% 35%', cut: 'whoosh'},
-  {at: 50.4, src: 'p8.jpg', zoom: [1.7, 1.85], origin: '82% 42%', cut: 'punch'},
-  {at: 52.36, src: 'p9.jpg', zoom: [1.0, 1.06], origin: '30% 25%', cut: 'whoosh'},
-  {at: 55.2, src: 'p9.jpg', zoom: [1.6, 1.75], origin: '80% 36%', cut: 'punch'},
-  {at: 57.2, src: 'p9.jpg', zoom: [1.6, 1.75], origin: '62% 62%', cut: 'punch'},
-  {at: 59.32, src: 'p10.jpg', zoom: [1.0, 1.08], origin: '50% 50%', cut: 'flash'},
-  {at: 61.4, src: 'p10.jpg', zoom: [1.4, 1.5], origin: '40% 55%', cut: 'punch'},
-  {at: END_AT, src: 'p1.jpg', zoom: [1.05, 1.15], origin: '50% 28%', cut: 'flash'},
+  {at: 0, src: 'p4.jpg', zoom: [2.0, 2.2], focus: [18, 38]}, // Стефано просит
+  {at: 1.75, src: 'p5.jpg', zoom: [1.9, 2.1], focus: [50, 36], cut: 'punch'}, // Каструччо отказывает
+  {at: 3.28, src: 'p1.jpg', zoom: [1.0, 1.08], focus: [48, 30], cut: 'whoosh'},
+  {at: 5.46, src: 'p1.jpg', zoom: [2.3, 2.5], focus: [48, 26], cut: 'punch'}, // «неправильно»
+  {at: 7.33, src: 'p2.jpg', zoom: [1.0, 1.08], focus: [50, 30], cut: 'whoosh'}, // Италия
+  {at: 9.41, src: 'p2.jpg', zoom: [1.6, 1.7], focus: [75, 8], cut: 'punch'}, // башни Лукки
+  {at: 10.79, src: 'p1.jpg', zoom: [1.6, 1.9], focus: [48, 26], cut: 'whoosh'}, // Каструччо Кастракани
+  {at: 13.2, src: 'p2.jpg', zoom: [2.0, 2.2], focus: [85, 46], cut: 'punch'}, // семья Поджо
+  {at: 15.66, src: 'p3.jpg', zoom: [1.0, 1.08], focus: [50, 45], cut: 'whoosh'}, // мятеж
+  {at: 17.6, src: 'p3.jpg', zoom: [2.0, 2.2], focus: [47, 51], cut: 'punch'}, // лицо мятежника
+  {at: 19.53, src: 'p4.jpg', zoom: [1.0, 1.06], focus: [45, 40], cut: 'whoosh'}, // старейшина пришёл
+  {at: 21.0, src: 'p4.jpg', zoom: [2.2, 2.4], focus: [18, 38], cut: 'punch'}, // Стефано
+  {at: 22.39, src: 'p4.jpg', zoom: [1.8, 1.95], focus: [40, 53], cut: 'punch'}, // руки — просит пощады
+  {at: 24.85, src: 'p4.jpg', zoom: [2.4, 2.6], focus: [18, 38], cut: 'punch'}, // «Вспомни, мы помогли…»
+  {at: 28.75, src: 'p4.jpg', zoom: [2.3, 2.5], focus: [67, 22], cut: 'punch'}, // Каструччо слушает
+  {at: 30.25, src: 'p5.jpg', zoom: [1.6, 2.0], focus: [50, 36], cut: 'flash'}, // выслушал…
+  {at: 32.2, src: 'p5.jpg', zoom: [2.0, 2.15], focus: [25, 25], cut: 'punch'}, // стража с мечами
+  {at: 33.92, src: 'p6.jpg', zoom: [1.0, 1.1], focus: [60, 70], cut: 'whoosh'}, // горящее знамя
+  {at: 38.12, src: 'p7.jpg', zoom: [1.0, 1.06], focus: [50, 30], cut: 'whoosh'}, // Греция
+  {at: 41.6, src: 'p7.jpg', zoom: [2.0, 2.15], focus: [20, 54], cut: 'punch'}, // послы двух городов
+  {at: 45.25, src: 'p7.jpg', zoom: [1.8, 1.95], focus: [40, 8], cut: 'punch'}, // Афины
+  {at: 48.04, src: 'p8.jpg', zoom: [2.0, 2.2], focus: [40, 23], cut: 'whoosh'}, // посол Коринфа
+  {at: 50.4, src: 'p8.jpg', zoom: [2.3, 2.45], focus: [62, 30], cut: 'punch'}, // афинянину скучно
+  {at: 52.36, src: 'p9.jpg', zoom: [2.0, 2.2], focus: [28, 26], cut: 'whoosh'}, // посол Коркиры
+  {at: 55.2, src: 'p9.jpg', zoom: [1.8, 1.95], focus: [83, 37], cut: 'punch'}, // флот
+  {at: 57.2, src: 'p9.jpg', zoom: [2.0, 2.15], focus: [65, 60], cut: 'punch'}, // афиняне задумались
+  {at: 59.32, src: 'p10.jpg', zoom: [1.0, 1.08], focus: [50, 50], cut: 'flash'}, // выбрали Коркиру
+  {at: 61.4, src: 'p10.jpg', zoom: [1.4, 1.5], focus: [40, 55], cut: 'punch'},
+  {at: END_AT, src: 'p1.jpg', zoom: [1.4, 1.6], focus: [48, 26], cut: 'flash'},
 ];
 
 const SLAMS: {text: string; at: number; color?: string}[] = [
@@ -74,6 +78,9 @@ const PLACES: {text: string; at: number}[] = [
   {text: 'АФИНЫ, 433 г. до н. э.', at: 40.2},
 ];
 
+const W = 1080;
+const H = 1920;
+
 const ShotView: React.FC<{shot: Shot; length: number}> = ({shot, length}) => {
   const f = useCurrentFrame();
   const p = interpolate(f, [0, length], [0, 1], {extrapolateRight: 'clamp', easing: Easing.out(Easing.quad)});
@@ -82,11 +89,16 @@ const ShotView: React.FC<{shot: Shot; length: number}> = ({shot, length}) => {
   if (shot.cut === 'whoosh') zoom *= interpolate(f, [0, 8], [1.12, 1], {extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic)});
   const blur = shot.cut === 'whoosh' ? interpolate(f, [0, 6], [10, 0], {extrapolateRight: 'clamp'}) : 0;
   const opacity = shot.cut === 'whoosh' ? interpolate(f, [0, 4], [0, 1], {extrapolateRight: 'clamp'}) : 1;
+  // лицо — в центр кадра (чуть выше середины), но без пустых краёв
+  const fx = (shot.focus[0] / 100) * W;
+  const fy = (shot.focus[1] / 100) * H;
+  const tx = Math.min(0, Math.max(W - W * zoom, W * 0.5 - fx * zoom));
+  const ty = Math.min(0, Math.max(H - H * zoom, H * 0.4 - fy * zoom));
   return (
     <AbsoluteFill style={{opacity, overflow: 'hidden', backgroundColor: 'black'}}>
       <Img
         src={staticFile(`z13/${shot.src}`)}
-        style={{width: '100%', height: '100%', objectFit: 'cover', filter: `contrast(1.08) saturate(1.08) blur(${blur}px)`, transform: `scale(${zoom})`, transformOrigin: shot.origin ?? '50% 50%'}}
+        style={{width: W, height: H, objectFit: 'cover', filter: `contrast(1.08) saturate(1.08) blur(${blur}px)`, transform: `translate(${tx}px, ${ty}px) scale(${zoom})`, transformOrigin: '0 0'}}
       />
     </AbsoluteFill>
   );
