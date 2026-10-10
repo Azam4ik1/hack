@@ -24,7 +24,7 @@ const W = 1080;
 const H = 1920;
 
 // ---------- Силуэт человека (начало координат — между ступнями) ----------
-const Man: React.FC<{x: number; y: number; scale: number; walk?: number; rim?: string}> = ({x, y, scale, walk = 0, rim}) => {
+export const Man: React.FC<{x: number; y: number; scale: number; walk?: number; rim?: string}> = ({x, y, scale, walk = 0, rim}) => {
   const legSwing = Math.sin(walk) * 18;
   const armSwing = -Math.sin(walk) * 12;
   const bob = Math.abs(Math.cos(walk)) * 6;
@@ -59,7 +59,7 @@ const Man: React.FC<{x: number; y: number; scale: number; walk?: number; rim?: s
 };
 
 // ---------- Машина 1920-х ----------
-const Car: React.FC<{x: number; y: number; scale: number; frame: number}> = ({x, y, scale, frame}) => {
+export const Car: React.FC<{x: number; y: number; scale: number; frame: number}> = ({x, y, scale, frame}) => {
   const spin = frame * 14;
   const wheel = (cx: number) => (
     <g transform={`translate(${cx} -55) rotate(${spin})`}>
@@ -85,7 +85,7 @@ const Car: React.FC<{x: number; y: number; scale: number; frame: number}> = ({x,
 };
 
 // ---------- Дым (сигара) ----------
-const Smoke: React.FC<{x: number; y: number; frame: number; count?: number}> = ({x, y, frame, count = 14}) => (
+export const Smoke: React.FC<{x: number; y: number; frame: number; count?: number}> = ({x, y, frame, count = 14}) => (
   <g>
     {Array.from({length: count}).map((_, i) => {
       const life = 90;
@@ -100,7 +100,7 @@ const Smoke: React.FC<{x: number; y: number; frame: number; count?: number}> = (
 );
 
 // ---------- Дождь ----------
-const Rain: React.FC<{frame: number; opacity?: number}> = ({frame, opacity = 0.35}) => (
+export const Rain: React.FC<{frame: number; opacity?: number}> = ({frame, opacity = 0.35}) => (
   <svg width={W} height={H} style={{position: 'absolute', opacity}}>
     {Array.from({length: 140}).map((_, i) => {
       const speed = 38 + random(`rs${i}`) * 22;
@@ -113,7 +113,7 @@ const Rain: React.FC<{frame: number; opacity?: number}> = ({frame, opacity = 0.3
 );
 
 // ---------- Сцена 1: Чикаго, ночь, дождь ----------
-const Chicago: React.FC = () => {
+export const Chicago: React.FC = () => {
   const f = useCurrentFrame();
   const push = interpolate(f, [0, s(3.8)], [1, 1.07]);
   const buildings = (layer: number) =>
@@ -217,7 +217,7 @@ const Office: React.FC = () => {
 };
 
 // ---------- Сцена 3: в дверях появляется Люстиг ----------
-const Doorway: React.FC = () => {
+export const Doorway: React.FC = () => {
   const f = useCurrentFrame();
   const open = interpolate(f, [0, 18], [0, 1], {extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic)});
   const walkP = interpolate(f, [10, s(3.2)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
