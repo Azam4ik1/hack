@@ -1,0 +1,8 @@
+node_modules/
+out/
+public/*.mp4
+public/*.mp3
+public/z11/
+public/z12/
+public/z13/
+public/z17/
