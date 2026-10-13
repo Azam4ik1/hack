@@ -6,6 +6,7 @@ import {Noir12, NOIR12_TOTAL} from './Noir12';
 import {Noir12Full, NOIR12_FULL_TOTAL} from './Noir12Full';
 import {Split12} from './Split12';
 import {Zakon13, Z13_TOTAL} from './Zakon13';
+import {Zakon17, Z17_TOTAL} from './Zakon17';
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -16,5 +17,6 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="Noir12Full" component={Noir12Full} durationInFrames={NOIR12_FULL_TOTAL} fps={30} width={1080} height={1920} />
     <Composition id="Split12" component={Split12} durationInFrames={NOIR12_FULL_TOTAL} fps={30} width={1080} height={1920} />
     <Composition id="Zakon13" component={Zakon13} durationInFrames={Z13_TOTAL} fps={30} width={1080} height={1920} />
+    <Composition id="Zakon17" component={Zakon17} durationInFrames={Z17_TOTAL} fps={30} width={1080} height={1920} />
   </>
 );
